@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Build output
+frontend/dist/
+
+# Scraper cache (regenerated on each run)
+scraper/cache/
+
+# Environment
+.env
+.env.local
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Note: trade_actions.json is NOT ignored — it's committed as a data snapshot
+# Note: scraper/data/source_pdfs/ is NOT ignored — source PDFs are part of the repo

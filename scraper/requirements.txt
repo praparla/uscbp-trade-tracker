@@ -1,0 +1,12 @@
+anthropic>=0.39.0
+beautifulsoup4>=4.12.0
+pydantic>=2.0.0
+pymupdf>=1.24.0
+requests>=2.31.0
+
+# Testing
+pytest>=8.0.0
+
+# Dev server (optional, local dev only)
+fastapi>=0.115.0
+uvicorn>=0.34.0

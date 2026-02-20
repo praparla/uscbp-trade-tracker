@@ -1,0 +1,297 @@
+{
+  "_comment": "Trade-relevant CSMS entries extracted from archive PDFs (Jan 20, 2025 - Feb 2026). Used by the scraper to cross-reference with web sources.",
+  "extraction_date": "2026-02-20",
+  "source_pdfs": [
+    "csms_archive_incl_dec2025.pdf",
+    "csms_archive_incl_jan2026_508c.pdf"
+  ],
+  "entries": [
+    {
+      "csms_id": "63577329",
+      "title": "GUIDANCE: Section 301 China Tariffs Four Year Review Increasing Additional Tariffs on Certain Imported Products",
+      "date": "2025-01-01",
+      "govdelivery_url": "https://content.govdelivery.com/accounts/USDHSCBP/bulletins/3ca1cf1",
+      "category": "Section 301"
+    },
+    {
+      "csms_id": "63826223",
+      "title": "Trade Remedy Law Enforcement Directorate (TRLED) Webinar Series for Fiscal Year 2025",
+      "date": "2025-01-21",
+      "govdelivery_url": null,
+      "category": "trade_remedy"
+    },
+    {
+      "csms_id": "63862000",
+      "title": "Sanctions on Russian Diamonds and Seafood",
+      "date": "2025-01-23",
+      "govdelivery_url": null,
+      "category": "sanction"
+    },
+    {
+      "csms_id": "63900103",
+      "title": "January 21, 2025, Quota opening: QB 25",
+      "date": "2025-01-27",
+      "govdelivery_url": null,
+      "category": "quota"
+    },
+    {
+      "csms_id": "63988467",
+      "title": "GUIDANCE: Additional Duties on Imports from Canada",
+      "date": "2025-02-03",
+      "govdelivery_url": null,
+      "category": "IEEPA"
+    },
+    {
+      "csms_id": "63988468",
+      "title": "GUIDANCE: Additional Duties on Imports from China",
+      "date": "2025-02-03",
+      "govdelivery_url": null,
+      "category": "IEEPA"
+    },
+    {
+      "csms_id": "63991510",
+      "title": "GUIDANCE: Pause on Application of Additional Duties on Imports from Canada",
+      "date": "2025-02-03",
+      "govdelivery_url": null,
+      "category": "IEEPA"
+    },
+    {
+      "csms_id": "64116253",
+      "title": "CATAIR Entry Summary Create/Update V102 Update: Cargo Sanctions",
+      "date": "2025-02-14",
+      "govdelivery_url": null,
+      "category": "sanction"
+    },
+    {
+      "csms_id": "64170845",
+      "title": "Certification (CERT) Deployment of Sanctions",
+      "date": "2025-02-19",
+      "govdelivery_url": null,
+      "category": "sanction"
+    },
+    {
+      "csms_id": "64235342",
+      "title": "Updated Guidance - Additional Duties on Imports from China and Hong Kong",
+      "date": "2025-02-25",
+      "govdelivery_url": null,
+      "category": "IEEPA"
+    },
+    {
+      "csms_id": "64297292",
+      "title": "GUIDANCE: Additional Duties on Imports from Mexico",
+      "date": "2025-03-03",
+      "govdelivery_url": null,
+      "category": "IEEPA"
+    },
+    {
+      "csms_id": "64297449",
+      "title": "GUIDANCE: Additional Duties on Imports from Canada",
+      "date": "2025-03-03",
+      "govdelivery_url": null,
+      "category": "IEEPA"
+    },
+    {
+      "csms_id": "64299816",
+      "title": "UPDATE - Additional Duties on Imports from China and Hong Kong",
+      "date": "2025-03-03",
+      "govdelivery_url": null,
+      "category": "IEEPA"
+    },
+    {
+      "csms_id": "64335789",
+      "title": "GUIDANCE - Update on Additional Duties on Imports from Mexico",
+      "date": "2025-03-06",
+      "govdelivery_url": null,
+      "category": "IEEPA"
+    },
+    {
+      "csms_id": "64348288",
+      "title": "GUIDANCE: Import Duties on Imports of Aluminum and Aluminum Derivative Products",
+      "date": "2025-03-07",
+      "govdelivery_url": null,
+      "category": "Section 232"
+    },
+    {
+      "csms_id": "64348411",
+      "title": "GUIDANCE: Import Duties on Imports of Steel and Steel Derivative Products",
+      "date": "2025-03-07",
+      "govdelivery_url": null,
+      "category": "Section 232"
+    },
+    {
+      "csms_id": "64605146",
+      "title": "Update: Import Duties on Imports of Aluminum Derivative Products",
+      "date": "2025-04-01",
+      "govdelivery_url": null,
+      "category": "Section 232"
+    },
+    {
+      "csms_id": "64624801",
+      "title": "GUIDANCE: Import Duties on Certain Automobiles",
+      "date": "2025-04-02",
+      "govdelivery_url": "https://content.govdelivery.com/accounts/USDHSCBP/bulletins/3da18a1",
+      "category": "Section 232"
+    },
+    {
+      "csms_id": "64639013",
+      "title": "GUIDANCE: Section 232 Additional Aluminum Derivative Products",
+      "date": "2025-04-03",
+      "govdelivery_url": null,
+      "category": "Section 232"
+    },
+    {
+      "csms_id": "64649265",
+      "title": "GUIDANCE - Reciprocal Tariffs, April 5, 2025 Effective Date",
+      "date": "2025-04-04",
+      "govdelivery_url": null,
+      "category": "IEEPA_reciprocal"
+    },
+    {
+      "csms_id": "64680374",
+      "title": "GUIDANCE - Reciprocal Tariffs, April 5 and April 9, 2025, Effective Dates",
+      "date": "2025-04-08",
+      "govdelivery_url": null,
+      "category": "IEEPA_reciprocal"
+    },
+    {
+      "csms_id": "64687696",
+      "title": "UPDATED GUIDANCE - Reciprocal Tariffs on Goods of China, April 9, 2025, Effective Date",
+      "date": "2025-04-08",
+      "govdelivery_url": null,
+      "category": "IEEPA_reciprocal"
+    },
+    {
+      "csms_id": "64913145",
+      "title": "GUIDANCE: Import Duties on Certain Automobile Parts",
+      "date": "2025-05-03",
+      "govdelivery_url": "https://content.govdelivery.com/accounts/USDHSCBP/bulletins/3de7ef9",
+      "category": "Section 232"
+    },
+    {
+      "csms_id": "65405824",
+      "title": "GUIDANCE: Section 232 Additional Steel Derivative Products",
+      "date": "2025-06-20",
+      "govdelivery_url": null,
+      "category": "Section 232"
+    },
+    {
+      "csms_id": "65441222",
+      "title": "UPDATED GUIDANCE: Section 232 Additional Steel Derivative Products",
+      "date": "2025-06-24",
+      "govdelivery_url": null,
+      "category": "Section 232"
+    },
+    {
+      "csms_id": "65475228",
+      "title": "GUIDANCE: 2025 United Kingdom Automobile Tariff Rate Quota",
+      "date": "2025-06-27",
+      "govdelivery_url": null,
+      "category": "quota"
+    },
+    {
+      "csms_id": "65798609",
+      "title": "Update - Additional Duties on Imports from Canada",
+      "date": "2025-07-31",
+      "govdelivery_url": null,
+      "category": "IEEPA"
+    },
+    {
+      "csms_id": "65794272",
+      "title": "GUIDANCE: Section 232 Import Duties on Copper and Copper Derivative Products",
+      "date": "2025-08-01",
+      "govdelivery_url": "https://content.govdelivery.com/accounts/USDHSCBP/bulletins/3ebf0e0",
+      "category": "Section 232"
+    },
+    {
+      "csms_id": "66027027",
+      "title": "Guidance - Additional Duties on Imports from India",
+      "date": "2025-08-25",
+      "govdelivery_url": null,
+      "category": "IEEPA"
+    },
+    {
+      "csms_id": "66077997",
+      "title": "GUIDANCE: Extension of Section 301 China Product Exclusions",
+      "date": "2025-08-29",
+      "govdelivery_url": null,
+      "category": "Section 301"
+    },
+    {
+      "csms_id": "66336270",
+      "title": "Guidance - Implementation of Tariff",
+      "date": "2025-09-24",
+      "govdelivery_url": null,
+      "category": "tariff"
+    },
+    {
+      "csms_id": "66427144",
+      "title": "Section 301 Vessel Fees",
+      "date": "2025-10-03",
+      "govdelivery_url": null,
+      "category": "Section 301"
+    },
+    {
+      "csms_id": "66492057",
+      "title": "GUIDANCE: Section 232 Import Duties on Timber, Lumber, and their Derivative Products",
+      "date": "2025-10-10",
+      "govdelivery_url": null,
+      "category": "Section 232"
+    },
+    {
+      "csms_id": "66494339",
+      "title": "UPDATE: Section 301 Vessel Fees",
+      "date": "2025-10-10",
+      "govdelivery_url": null,
+      "category": "Section 301"
+    },
+    {
+      "csms_id": "66665063",
+      "title": "GUIDANCE: Harmonized Tariff Schedule for the Importation of Dogs",
+      "date": "2025-10-29",
+      "govdelivery_url": null,
+      "category": "tariff"
+    },
+    {
+      "csms_id": "66665333",
+      "title": "GUIDANCE: Section 232 Medium and Heavy-Duty Vehicles, Parts, and Buses",
+      "date": "2025-11-01",
+      "govdelivery_url": null,
+      "category": "Section 232"
+    },
+    {
+      "csms_id": "66814923",
+      "title": "UPDATE - Agricultural Products Exempted from Reciprocal Tariffs",
+      "date": "2025-11-14",
+      "govdelivery_url": null,
+      "category": "exclusion"
+    },
+    {
+      "csms_id": "66871909",
+      "title": "UPDATE: Agricultural Products Exempted from Brazil Tariffs",
+      "date": "2025-11-20",
+      "govdelivery_url": null,
+      "category": "exclusion"
+    },
+    {
+      "csms_id": "67133044",
+      "title": "Guidance - Implementation of Tariff-Related Elements of the Framework for a United States-Switzerland-Liechtenstein Agreement",
+      "date": "2025-12-17",
+      "govdelivery_url": null,
+      "category": "trade_agreement"
+    },
+    {
+      "csms_id": "67400472",
+      "title": "GUIDANCE: Section 232 Import Duties on Semiconductors and their Derivative Products",
+      "date": "2026-01-14",
+      "govdelivery_url": null,
+      "category": "Section 232"
+    },
+    {
+      "csms_id": "67545499",
+      "title": "UPDATE: Additional Parties Qualified for the Payment of Duty on International Mail Shipments pursuant to Executive Order 14324",
+      "date": "2026-01-29",
+      "govdelivery_url": null,
+      "category": "IEEPA"
+    }
+  ]
+}
