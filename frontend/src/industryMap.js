@@ -206,9 +206,8 @@ export const INDUSTRY_ESTIMATES = {
       { claim: 'Copper tariff rate', value: '50%', csms_id: '65794272',
         excerpt: 'ad valorem tariff of 50 percent on all imports of semi-finished copper' },
     ],
-    external: [
-      { claim: 'Estimated combined import value', value: '~$50B', source: 'U.S. Census Bureau trade data (2024)' },
-    ],
+    // TODO: Populate with real Census Bureau trade volume data (see BACKLOG.md Phase 2)
+    external: [],
     keyMetric: 'Copper at 50% — highest Section 232 rate',
   },
   'automotive': {
@@ -219,8 +218,9 @@ export const INDUSTRY_ESTIMATES = {
         excerpt: '25 percent duty on imports' },
     ],
     external: [
-      { claim: 'Estimated auto import value', value: '~$250B', source: 'U.S. Census Bureau (2024)' },
-      { claim: 'Per-vehicle price increase', value: '~$4,000', source: 'Policy analysis estimates' },
+      { claim: 'Est. per-vehicle price increase', value: '~$4,000',
+        source: 'Yale Budget Lab',
+        url: 'https://budgetlab.yale.edu/research/fiscal-economic-and-distributional-effects-25-auto-tariffs' },
     ],
     keyMetric: '25% on vehicles and parts — USMCA-eligible parts exempt',
   },
@@ -229,9 +229,8 @@ export const INDUSTRY_ESTIMATES = {
       { claim: 'S232 semiconductor rate', value: '25%', csms_id: '67400472',
         excerpt: '25 percent' },
     ],
-    external: [
-      { claim: 'Estimated semiconductor import value', value: '~$20-30B', source: 'ITC trade data' },
-    ],
+    // TODO: Populate with real ITC/Census trade volume data (see BACKLOG.md Phase 2)
+    external: [],
     keyMetric: 'S232 25% effective Jan 2026 — S301 ramping to 50% by 2027',
   },
   'agriculture': {
@@ -241,9 +240,8 @@ export const INDUSTRY_ESTIMATES = {
       { claim: 'Brazil ag exemptions', value: '238 classifications', csms_id: '66871909',
         excerpt: '238 agricultural harmonized tariff schedule' },
     ],
-    external: [
-      { claim: 'Agricultural export decline to Mexico', value: '-12%', source: 'USDA trade data (2025)' },
-    ],
+    // TODO: Populate with USDA/Census trade volume data (see BACKLOG.md Phase 2)
+    external: [],
     keyMetric: '475+ product exemptions across reciprocal and Brazil programs',
   },
   'energy': {
@@ -264,8 +262,12 @@ export const INDUSTRY_ESTIMATES = {
         excerpt: '164 product specific exclusions and 14 exclusions covering certain manufacturing equipment' },
     ],
     external: [
-      { claim: '2025 tariff revenue collected', value: '$287B', source: 'CBP/Treasury revenue reports' },
-      { claim: 'Per-household annual cost', value: '~$1,000-1,300', source: 'Policy analysis estimates' },
+      { claim: '2025 tariff revenue collected', value: '$287B',
+        source: 'Tax Foundation',
+        url: 'https://taxfoundation.org/research/all/federal/trump-tariffs-trade-war/' },
+      { claim: 'Est. per-household annual cost', value: '~$1,000-1,300',
+        source: 'Boston Federal Reserve',
+        url: 'https://www.bostonfed.org/publications/current-policy-perspectives/2025/who-pays-for-tariffs.aspx' },
     ],
     keyMetric: '83 countries with individual rates (10%-50%)',
   },

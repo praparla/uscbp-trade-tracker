@@ -129,6 +129,29 @@ Once `trade_volumes.json` exists:
 - **Superseded actions:** Only add `trade_volume` to `status: "active"` actions. Superseded actions show historical rates that no longer apply, so volume data would be misleading.
 - **Source:** U.S. Census Bureau USA Trade Online — https://www.census.gov/foreign-trade/
 
+### Industry View External Claims — Census API Backfill
+
+The Industry Impact View (`industryMap.js`) has a two-tier citation system:
+- **Verified (Tier 1):** Directly from CSMS bulletins with `csms_id` + `excerpt` — fully traceable.
+- **External (Tier 2):** Third-party estimates with `source` + optional `url` — must link to a specific public document.
+
+Several sectors currently have **empty** external arrays (primary-metals, semiconductors, agriculture) because the original placeholder estimates (e.g., "~$50B imports, Source: U.S. Census Bureau") were removed — they were composite figures with no specific linkable source document.
+
+**When Census API integration (Phase 2) is implemented, backfill these empty external arrays with real data:**
+
+| Sector | What to add | Census query |
+|--------|-------------|--------------|
+| primary-metals | Annual import value for HS Ch. 72+73+74+76 | `I_COMMODITY=72*,73*,74*,76*` |
+| semiconductors | Annual import value for HS Ch. 85 (electronic) | `I_COMMODITY=85*` |
+| agriculture | Bilateral export changes (Mexico, China) | `I_COMMODITY=01*-24*&CTY_CODE=2010` |
+
+Each backfilled claim should include:
+- `source`: "U.S. Census Bureau" (or "USDA" for ag exports)
+- `url`: Direct link to the Census API query or USA Trade Online page that produces the figure
+- `value`: The actual figure from the API response, not a rough estimate
+
+**Rule:** Never add an external claim without a `url` that a user can click to verify the figure. Text-only source attributions (e.g., "Policy analysis estimates") are not acceptable.
+
 ---
 
 ## New Dashboard Views (Prioritized by Current Policy Impact)

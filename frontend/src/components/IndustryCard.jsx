@@ -114,9 +114,21 @@ export default function IndustryCard({ sector, onSelectAction }) {
                 {sector.estimates.external.map((ext, i) => (
                   <li key={i} className="text-sm text-gray-700">
                     {ext.claim}: <span className="font-semibold">{ext.value}</span>
-                    <span className="text-xs text-gray-400 ml-1">
-                      Source: {ext.source}
-                    </span>
+                    {ext.url ? (
+                      <a
+                        href={ext.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-blue-500 hover:text-blue-700 hover:underline ml-1"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Source: {ext.source} ↗
+                      </a>
+                    ) : (
+                      <span className="text-xs text-gray-400 ml-1">
+                        Source: {ext.source}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>

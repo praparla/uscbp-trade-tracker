@@ -171,7 +171,9 @@ describe('IndustryCard', () => {
           excerpt: 'ad valorem tariff of 50 percent' },
       ],
       external: [
-        { claim: 'Estimated import value', value: '~$50B', source: 'U.S. Census Bureau trade data (2024)' },
+        { claim: 'Est. per-vehicle price increase', value: '~$4,000',
+          source: 'Yale Budget Lab',
+          url: 'https://budgetlab.yale.edu/research/auto-tariffs' },
       ],
       keyMetric: 'Copper at 50% — highest Section 232 rate',
     },
@@ -214,7 +216,7 @@ describe('IndustryCard', () => {
 
     expect(screen.getByTestId('external-section')).toBeInTheDocument()
     expect(screen.getByText(/External Estimates/)).toBeInTheDocument()
-    expect(screen.getByText(/Estimated import value/)).toBeInTheDocument()
+    expect(screen.getByText(/Est. per-vehicle price increase/)).toBeInTheDocument()
   })
 
   it('shows action list when expanded', () => {
@@ -322,10 +324,28 @@ describe('IndustryCard', () => {
     expect(screen.getByText('CSMS #65794272')).toBeInTheDocument()
   })
 
-  it('renders source attribution for external claims', () => {
+  it('renders source attribution as clickable link for external claims with url', () => {
     render(<IndustryCard sector={sectorData} onSelectAction={() => {}} />)
     fireEvent.click(screen.getByTestId('industry-card-primary-metals'))
-    expect(screen.getByText(/U.S. Census Bureau trade data/)).toBeInTheDocument()
+    const link = screen.getByText(/Yale Budget Lab/)
+    expect(link).toBeInTheDocument()
+    expect(link.tagName).toBe('A')
+    expect(link).toHaveAttribute('href', 'https://budgetlab.yale.edu/research/auto-tariffs')
+    expect(link).toHaveAttribute('target', '_blank')
+  })
+
+  it('renders source as plain text when external claim has no url', () => {
+    const noUrlSector = {
+      ...sectorData,
+      estimates: {
+        ...sectorData.estimates,
+        external: [{ claim: 'Some estimate', value: '~$10B', source: 'Generic report' }],
+      },
+    }
+    render(<IndustryCard sector={noUrlSector} onSelectAction={() => {}} />)
+    fireEvent.click(screen.getByTestId('industry-card-primary-metals'))
+    const source = screen.getByText(/Generic report/)
+    expect(source.tagName).toBe('SPAN')
   })
 
   it('hides key metric when keyMetric is empty string', () => {

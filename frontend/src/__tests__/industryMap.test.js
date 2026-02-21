@@ -258,6 +258,16 @@ describe('INDUSTRY_ESTIMATES', () => {
     }
   })
 
+  it('every external claim with a url has a valid https URL', () => {
+    for (const sid of sectorIds) {
+      for (const ext of INDUSTRY_ESTIMATES[sid].external) {
+        if (ext.url) {
+          expect(ext.url, `${sid}: "${ext.claim}" url should be https`).toMatch(/^https:\/\//)
+        }
+      }
+    }
+  })
+
   it('agriculture verified claims include 237 and 238 counts', () => {
     const agVerified = INDUSTRY_ESTIMATES['agriculture'].verified
     const has237 = agVerified.some((v) => v.value.includes('237'))
