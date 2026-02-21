@@ -215,8 +215,8 @@ export const INDUSTRY_ESTIMATES = {
     verified: [
       { claim: 'Passenger vehicle tariff', value: '25%', csms_id: '64624801',
         excerpt: '25 percent' },
-      { claim: 'Auto parts tariff', value: '25%', csms_id: '64913145',
-        excerpt: '25 percent' },
+      { claim: 'Auto parts tariff', value: '25%', csms_id: '64624801',
+        excerpt: '25 percent duty on imports' },
     ],
     external: [
       { claim: 'Estimated auto import value', value: '~$250B', source: 'U.S. Census Bureau (2024)' },
@@ -239,7 +239,7 @@ export const INDUSTRY_ESTIMATES = {
       { claim: 'Reciprocal ag exemptions', value: '237 classifications', csms_id: '66814923',
         excerpt: '237 agricultural HTSUS classifications' },
       { claim: 'Brazil ag exemptions', value: '238 classifications', csms_id: '66871909',
-        excerpt: '238 agricultural HTSUS classifications' },
+        excerpt: '238 agricultural harmonized tariff schedule' },
     ],
     external: [
       { claim: 'Agricultural export decline to Mexico', value: '-12%', source: 'USDA trade data (2025)' },

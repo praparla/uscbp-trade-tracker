@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
-    "validate-data": "node src/__tests__/validateData.mjs"
+    "validate-data": "node src/__tests__/validateData.mjs",
+    "validate-citations": "node src/__tests__/validateIndustryCitations.mjs"
   },
   "dependencies": {
     "date-fns": "^3.6.0",
