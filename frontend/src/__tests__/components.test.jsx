@@ -127,8 +127,9 @@ describe('FilterPanel', () => {
     expect(screen.getByPlaceholderText('Search actions...')).toBeInTheDocument()
   })
 
-  it('renders action type filter buttons', () => {
+  it('renders action type filter buttons when expanded', () => {
     render(<FilterPanel {...defaultProps} />)
+    fireEvent.click(screen.getByText('Filters'))
     expect(screen.getByText('Tariff')).toBeInTheDocument()
     expect(screen.getByText('Quota')).toBeInTheDocument()
     expect(screen.getByText('Sanction')).toBeInTheDocument()
@@ -155,8 +156,9 @@ describe('FilterPanel', () => {
     expect(defaultProps.clearFilters).toHaveBeenCalled()
   })
 
-  it('renders status filter buttons', () => {
+  it('renders status filter buttons when expanded', () => {
     render(<FilterPanel {...defaultProps} />)
+    fireEvent.click(screen.getByText('Filters'))
     expect(screen.getByText('Active')).toBeInTheDocument()
     expect(screen.getByText('Pending')).toBeInTheDocument()
   })
@@ -164,6 +166,7 @@ describe('FilterPanel', () => {
   it('calls updateFilter when status button is clicked', () => {
     const updateFilter = vi.fn()
     render(<FilterPanel {...defaultProps} updateFilter={updateFilter} />)
+    fireEvent.click(screen.getByText('Filters'))
     fireEvent.click(screen.getByText('Active'))
     expect(updateFilter).toHaveBeenCalledWith('status', ['active'])
   })
