@@ -136,6 +136,56 @@ describe('getIndustriesForAction', () => {
     }
     expect(getIndustriesForAction(fakeAction)).toEqual(['semiconductors'])
   })
+
+  it('matches automotive keywords (vehicle, truck)', () => {
+    const fakeAction = {
+      id: 'fake-auto',
+      title: 'Heavy Truck Import Restrictions',
+      summary: '',
+      federal_authority: null,
+    }
+    expect(getIndustriesForAction(fakeAction)).toEqual(['automotive'])
+  })
+
+  it('matches energy keywords (petroleum)', () => {
+    const fakeAction = {
+      id: 'fake-energy',
+      title: 'Petroleum Products Duty Notice',
+      summary: '',
+      federal_authority: null,
+    }
+    expect(getIndustriesForAction(fakeAction)).toEqual(['energy'])
+  })
+
+  it('matches agriculture keywords in summary', () => {
+    const fakeAction = {
+      id: 'fake-ag',
+      title: 'Exemption Notice',
+      summary: 'Agricultural products exempt from tariffs',
+      federal_authority: null,
+    }
+    expect(getIndustriesForAction(fakeAction)).toEqual(['agriculture'])
+  })
+
+  it('matches luxury-goods keywords (diamond)', () => {
+    const fakeAction = {
+      id: 'fake-luxury',
+      title: 'Diamond Import Ban',
+      summary: '',
+      federal_authority: null,
+    }
+    expect(getIndustriesForAction(fakeAction)).toEqual(['luxury-goods'])
+  })
+
+  it('matches consumer-goods keywords (reciprocal)', () => {
+    const fakeAction = {
+      id: 'fake-consumer',
+      title: 'Reciprocal Tariff Update',
+      summary: '',
+      federal_authority: null,
+    }
+    expect(getIndustriesForAction(fakeAction)).toEqual(['consumer-goods'])
+  })
 })
 
 // ─── getSectorById ───────────────────────────────────────────────────

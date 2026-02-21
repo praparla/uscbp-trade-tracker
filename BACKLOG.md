@@ -20,6 +20,117 @@ These themes should inform view prioritization. Views addressing these questions
 
 ---
 
+## ⭐ NEXT FEATURE: Trade Volume Integration (Bake-and-Freeze, Test Pass First)
+
+**Goal:** Cross-reference existing tariff rules with real U.S. import volume data so the dashboard shows economic impact (dollars at stake), not just action counts.
+
+**Core problem:** We have tariff rules but not trade flows. The dataset has 41 actions with duty rates and HS codes, but zero import values — so we can't answer "how much does this tariff actually cost?" This is the single highest-leverage data enrichment possible.
+
+**Architecture decision:** Static bake-and-freeze (Option A). The scraper fetches Census Bureau data once, bakes it into `trade_actions.json` as a new `trade_volume` field, and commits it. No backend, no runtime API calls, no maintenance overhead. Refresh manually when data updates.
+
+---
+
+### Phase 1 — Manual Test Pass (5 actions, no new scraper code)
+
+Add `trade_volume` to **5 high-confidence actions only** — the cleanest Section 232 tariffs where scope is unambiguous (all countries, specific HS chapters, fixed rate):
+
+| Action ID | Product | Duty Rate | 2024 Import Volume | Est. Tariff Cost |
+|-----------|---------|-----------|-------------------|-----------------|
+| `csms-64348411-s232-steel` | Iron & Steel (HS Ch. 72–73) | 25% | ~$26B | ~$6.5B |
+| `csms-64348288-s232-aluminum` | Aluminum (HS Ch. 76) | 25% | ~$18.5B | ~$4.6B |
+| `csms-64624801-s232-autos` | Passenger Vehicles & Light Trucks | 25% | ~$200B | ~$50B |
+| `csms-64913145-s232-autoparts` | Automobile Parts (non-USMCA) | 25% | ~$150B total; ~$90B taxable | ~$22.5B |
+| `csms-65794272-s232-copper` | Copper (HS Ch. 74) | 50% on copper content | ~$4.2B | ~$1.5B |
+
+**Why these 5:** All-country scope (no bilateral stacking complexity), fixed clean rate, well-defined HS chapter, all ACTIVE, highest absolute dollar impact.
+
+**New field schema** (add to each action, optional on all others):
+```json
+"trade_volume": {
+  "annual_import_usd_2024": 26000000000,
+  "estimated_tariff_cost_usd": 6500000000,
+  "data_source": "U.S. Census Bureau (HS Chapters 72–73, 2024)",
+  "confidence": "medium",
+  "note": "Covers total U.S. iron/steel imports. Estimate applies 25% rate to full chapter value; actual affected subset may vary due to product exclusions."
+}
+```
+
+Confidence levels:
+- `"high"` — exact HS chapter, all countries, fixed rate, no exemption complexity
+- `"medium"` — minor exclusion caveats (e.g., 25+ yr old vehicles, drawback)
+- `"low"` — significant exemption complexity (e.g., USMCA, copper content vs. article value)
+
+**Frontend change — `ActionDetailModal.jsx`:** Add one new "Economic Impact" block after `duty_rate`, rendered only when `trade_volume` is present:
+```
+Economic Impact (Est.)
+  2024 Import Volume      $26.0B
+  Est. Annual Tariff Cost $6.5B    ← red
+  [note text]
+  Source: U.S. Census Bureau · Confidence: medium
+```
+Format: values in `$XB` / `$XT` shorthand. `estimated_tariff_cost_usd` in red. Source + confidence as muted footnote.
+
+**Update both JSON files** (per data contract):
+- `frontend/src/data/trade_actions.json`
+- `frontend/public/data/trade_actions.json`
+
+**No new hooks, no new views, no new files.** This is purely data enrichment + modal display.
+
+**Test criteria for Phase 1:**
+- Open any of the 5 enriched actions in the modal → "Economic Impact" section appears
+- Open any non-enriched action → section absent (graceful hide)
+- Numbers display correctly formatted (`$26.0B`, not `$26000000000`)
+- Note and confidence footnote render without overflow
+
+---
+
+### Phase 2 — Census API Scraper Module (after Phase 1 validated)
+
+Add `scraper/fetch_trade_volumes.py` to automate Phase 1 for all actions:
+
+**Census Bureau endpoint (no API key required):**
+```
+https://api.census.gov/data/timeseries/intltrade/imports
+  ?get=GEN_VAL_MO,I_COMMODITY,CTY_CODE
+  &I_COMMODITY=72*    (HS chapter wildcard)
+  &time=2024
+  &CTY_CODE=5700      (e.g., China ISO numeric)
+```
+
+**Scope:** Fetch 2023 + 2024 annual data + latest 2025 monthly for the ~8 HS chapters covered by our actions: 72 (iron/steel), 74 (copper), 76 (aluminum), 84 (machinery), 85 (electronics), 87 (vehicles/parts), 44 (lumber), agricultural chapters.
+
+**Country mapping needed:** Census uses ISO numeric codes (e.g., `5700` = China, `1220` = Canada, `2010` = Mexico). Add lookup table to `scraper/config.py`.
+
+**Output:** Standalone `frontend/public/data/trade_volumes.json` with HS-chapter × country import values, plus a monthly time series for the top 5 chapters (for future front-loading surge view).
+
+**Caching:** Extend `scraper/cache.py` to cache Census API responses for 7 days (trade data doesn't update frequently).
+
+**Rate limits:** Census API allows ~500 req/day without a key. Caching makes this a non-issue on re-runs.
+
+---
+
+### Phase 3 — Weighted Map & Sectoral Views (after Phase 2)
+
+Once `trade_volumes.json` exists:
+
+1. **Map: color by dollar exposure** instead of action count — countries with $200B+ in affected imports show darker than countries with 2 tariff actions but $1B volume
+2. **Sectoral Impact Dashboard** (BACKLOG #2) — powered by HS-to-sector mapping + Census volumes → bar chart of dollar exposure by industry (Automotive $200B+, Consumer Goods $150B+, Steel/Aluminum $45B)
+3. **Summary cards upgrade** — replace "41 actions" with "$340B+ in affected imports" as the headline stat
+4. **Trade Deficit Tracker** — monthly Census data + bilateral deficit figures from Census/USTR
+
+---
+
+### Data Notes & Caveats
+
+- **Census data lag:** Annual 2024 data fully available by ~Mar 2025. Monthly 2025 data lags 6–8 weeks.
+- **Chapter-level vs. action-level precision:** Section 232 tariffs often exclude specific HTS subheadings. Chapter-level import values are an upper bound; label all estimates accordingly.
+- **USMCA exemption complexity:** Auto parts exempt if USMCA-qualifying. Census doesn't break out USMCA-eligible separately, so use rough country-of-origin proxy (Canada + Mexico × est. 65% USMCA qualification rate).
+- **Copper duty is on copper content, not article value:** 50% applies to the copper content value only. Est. copper content ≈ 70% of HS Ch. 74 import value → effective rate on full article value ≈ 35%.
+- **Superseded actions:** Only add `trade_volume` to `status: "active"` actions. Superseded actions show historical rates that no longer apply, so volume data would be misleading.
+- **Source:** U.S. Census Bureau USA Trade Online — https://www.census.gov/foreign-trade/
+
+---
+
 ## New Dashboard Views (Prioritized by Current Policy Impact)
 
 ### 0. USMCA 2026 Review Countdown & Risk Dashboard 🚨 [CRITICAL - TIME-SENSITIVE]

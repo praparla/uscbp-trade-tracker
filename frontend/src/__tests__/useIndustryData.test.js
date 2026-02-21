@@ -307,3 +307,40 @@ describe('useIndustryData', () => {
     })
   })
 })
+
+// ─── Additional computeDutyRateRange Edge Cases ───────────────────────
+
+describe('computeDutyRateRange (additional)', () => {
+  it('handles decimal rates like 7.5%', () => {
+    expect(computeDutyRateRange(['7.5%'])).toBe('7.5%')
+  })
+
+  it('handles mixed decimal and integer rates', () => {
+    expect(computeDutyRateRange(['7.5%', '25%'])).toBe('7.5%-25%')
+  })
+
+  it('handles multiple identical rates', () => {
+    expect(computeDutyRateRange(['25%', '25%', '25%'])).toBe('25%')
+  })
+
+  it('handles complex rate with semicolons', () => {
+    const result = computeDutyRateRange(['25% (general); 10% (energy); 50% (copper)'])
+    expect(result).toBe('10%-50%')
+  })
+})
+
+// ─── Additional parseMaxRate Edge Cases ───────────────────────────────
+
+describe('parseMaxRate (additional)', () => {
+  it('extracts max from dash-range "10-25%" → 25', () => {
+    expect(parseMaxRate(['10-25%'])).toBe(25)
+  })
+
+  it('handles decimal rates', () => {
+    expect(parseMaxRate(['7.5%', '12.5%'])).toBe(12.5)
+  })
+
+  it('handles single rate', () => {
+    expect(parseMaxRate(['50%'])).toBe(50)
+  })
+})

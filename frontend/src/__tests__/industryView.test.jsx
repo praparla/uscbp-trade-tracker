@@ -276,4 +276,127 @@ describe('IndustryCard', () => {
     fireEvent.click(screen.getByTestId('industry-card-primary-metals'))
     expect(screen.queryByTestId('verified-section')).toBeNull()
   })
+
+  it('displays duty_rate for action rows when available', () => {
+    render(<IndustryCard sector={sectorData} onSelectAction={() => {}} />)
+    fireEvent.click(screen.getByTestId('industry-card-primary-metals'))
+    // 50% appears in both the verified claim value and the action row duty_rate
+    const matches = screen.getAllByText('50%')
+    expect(matches.length).toBeGreaterThanOrEqual(2)
+  })
+
+  it('displays N/A for actions with null effective_date', () => {
+    const withNullDate = {
+      ...sectorData,
+      actions: [
+        makeAction('csms-64348411-s232-steel', { title: 'Steel', effective_date: null }),
+      ],
+    }
+    render(<IndustryCard sector={withNullDate} onSelectAction={() => {}} />)
+    fireEvent.click(screen.getByTestId('industry-card-primary-metals'))
+    expect(screen.getByText('N/A')).toBeInTheDocument()
+  })
+
+  it('sorts action rows by date descending when expanded', () => {
+    const withDates = {
+      ...sectorData,
+      actions: [
+        makeAction('csms-64348411-s232-steel', { title: 'Early Action', effective_date: '2025-01-01' }),
+        makeAction('csms-64348288-s232-aluminum', { title: 'Late Action', effective_date: '2025-12-01' }),
+        makeAction('csms-65794272-s232-copper', { title: 'Mid Action', effective_date: '2025-06-15' }),
+      ],
+    }
+    render(<IndustryCard sector={withDates} onSelectAction={() => {}} />)
+    fireEvent.click(screen.getByTestId('industry-card-primary-metals'))
+
+    const actionButtons = screen.getAllByTestId(/action-row-/)
+    expect(actionButtons[0]).toHaveTextContent('Late Action')
+    expect(actionButtons[1]).toHaveTextContent('Mid Action')
+    expect(actionButtons[2]).toHaveTextContent('Early Action')
+  })
+
+  it('renders CSMS # citations for verified claims', () => {
+    render(<IndustryCard sector={sectorData} onSelectAction={() => {}} />)
+    fireEvent.click(screen.getByTestId('industry-card-primary-metals'))
+    expect(screen.getByText('CSMS #64348411')).toBeInTheDocument()
+    expect(screen.getByText('CSMS #65794272')).toBeInTheDocument()
+  })
+
+  it('renders source attribution for external claims', () => {
+    render(<IndustryCard sector={sectorData} onSelectAction={() => {}} />)
+    fireEvent.click(screen.getByTestId('industry-card-primary-metals'))
+    expect(screen.getByText(/U.S. Census Bureau trade data/)).toBeInTheDocument()
+  })
+
+  it('hides key metric when keyMetric is empty string', () => {
+    const noMetric = {
+      ...sectorData,
+      estimates: { ...sectorData.estimates, keyMetric: '' },
+    }
+    render(<IndustryCard sector={noMetric} onSelectAction={() => {}} />)
+    expect(screen.queryByText(/highest Section 232/)).toBeNull()
+  })
+})
+
+// ─── IndustryComparisonChart (additional) ─────────────────────────────
+
+describe('IndustryComparisonChart (additional)', () => {
+  it('renders with multiple data entries', () => {
+    const data = [
+      { sector: 'Primary Metals', sectorId: 'primary-metals', actions: 5, active: 3, color: '#6366f1' },
+      { sector: 'Automotive', sectorId: 'automotive', actions: 4, active: 4, color: '#ef4444' },
+      { sector: 'Consumer Goods', sectorId: 'consumer-goods', actions: 18, active: 15, color: '#3b82f6' },
+    ]
+    render(<IndustryComparisonChart chartData={data} />)
+    expect(screen.getByText('Actions by Industry Sector')).toBeInTheDocument()
+    expect(screen.getByTestId('bar-chart')).toBeInTheDocument()
+  })
+
+  it('renders heading even in empty state', () => {
+    render(<IndustryComparisonChart chartData={[]} />)
+    expect(screen.getByText('Actions by Industry')).toBeInTheDocument()
+  })
+})
+
+// ─── IndustryRateChart (additional) ───────────────────────────────────
+
+describe('IndustryRateChart (additional)', () => {
+  it('renders with multiple data entries', () => {
+    const data = [
+      { sector: 'Primary Metals', sectorId: 'primary-metals', maxRate: 50, color: '#6366f1' },
+      { sector: 'Automotive', sectorId: 'automotive', maxRate: 25, color: '#ef4444' },
+    ]
+    render(<IndustryRateChart rateChartData={data} />)
+    expect(screen.getByText('Max Tariff Rate by Sector')).toBeInTheDocument()
+    expect(screen.getByTestId('bar-chart')).toBeInTheDocument()
+  })
+})
+
+// ─── IndustryView (additional) ────────────────────────────────────────
+
+describe('IndustryView (additional)', () => {
+  it('shows largest sector action count', () => {
+    const actions = [
+      makeAction('csms-64348411-s232-steel'),
+      makeAction('csms-64348288-s232-aluminum'),
+      makeAction('csms-65794272-s232-copper'),
+      makeAction('csms-64624801-s232-autos'),
+    ]
+    render(<IndustryView filteredActions={actions} onSelectAction={() => {}} />)
+    // Primary metals has 3 actions → appears in both stats card and sector pill
+    const matches = screen.getAllByText('3 actions')
+    expect(matches.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('renders multiple sector cards with data-testids', () => {
+    const actions = [
+      makeAction('csms-64348411-s232-steel'),
+      makeAction('csms-64624801-s232-autos'),
+      makeAction('csms-sanctions-russia', { duty_rate: 'Prohibited' }),
+    ]
+    render(<IndustryView filteredActions={actions} onSelectAction={() => {}} />)
+    expect(screen.getByTestId('industry-card-primary-metals')).toBeInTheDocument()
+    expect(screen.getByTestId('industry-card-automotive')).toBeInTheDocument()
+    expect(screen.getByTestId('industry-card-luxury-goods')).toBeInTheDocument()
+  })
 })
