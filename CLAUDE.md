@@ -747,12 +747,88 @@ Frontend handles: empty actions → empty state. Missing meta → defaults. Cap 
 - Pre-filter testable with sample text snippets.
 - Truncation testable with sample long document.
 
-## Rule 14: Security
+## Rule 14: Security & Credential Handling
 
-- API key from env var only. Never hardcode.
-- FastAPI binds `127.0.0.1` only.
-- No `dangerouslySetInnerHTML`. Use React's default JSX escaping.
-- GitHub Actions has no access to API key.
+### Never Commit Secrets
+
+**CRITICAL: These must NEVER appear in committed code:**
+- API keys (Anthropic, GitHub, etc.)
+- Personal access tokens
+- OAuth tokens
+- Database passwords
+- AWS credentials
+- Private URLs with credentials
+
+**What to do if you accidentally commit a secret:**
+1. **STOP immediately** — do not push
+2. Delete the file or remove the secret from the commit
+3. Amend the commit: `git commit --amend`
+4. Force-push ONLY if not yet pushed to remote: `git push --force-with-lease`
+5. If already pushed to GitHub: regenerate the token at https://github.com/settings/tokens
+6. File a security incident report to service provider
+
+### Environment Variables (Correct)
+
+**For local development:**
+```bash
+export ANTHROPIC_API_KEY="sk-ant-..."
+export GITHUB_TOKEN="ghp_..."  # Optional for GitHub CLI
+```
+
+Store in your shell profile (`~/.zshrc`, `~/.bashrc`), NOT in code.
+
+**For GitHub Actions (Automatic):**
+- `${{ secrets.GITHUB_TOKEN }}` — auto-provisioned, expires after job
+- Never manually add other secrets to Actions without explicit need
+- Review Actions logs to ensure secrets aren't printed
+
+### .gitignore & Local Files
+
+**Always gitignore:**
+```
+.env
+.env.local
+.env.*.local
+*.local.json
+.claude/settings.local.json
+credentials.json
+secrets/
+```
+
+**Local settings in version control:**
+- `.claude/settings.local.json` is never committed (sensitive commands may contain tokens)
+- FastAPI binds `127.0.0.1` only — no exposure risk
+
+### Code Best Practices
+
+- API key from `os.environ["ANTHROPIC_API_KEY"]` only
+- Never log/print API key values — log "API key present: ✓" instead
+- Use environment variables for all credentials
+- No `dangerouslySetInnerHTML` in React — use safe JSX
+- No hardcoded URLs with credentials
+- GitHub Actions uses auto-provisioned `GITHUB_TOKEN` — never add personal tokens
+
+### Scanning for Leaks
+
+Before committing, check:
+```bash
+# Search for common secret patterns
+grep -r "sk-ant-\|ghp_\|ANTHROPIC_API_KEY=" . \
+  --include="*.py" --include="*.js" --include="*.json" \
+  --exclude-dir=node_modules --exclude-dir=.git
+
+# Check git diff before commit
+git diff --cached | grep -E "sk-ant-|ghp_|password|token"
+```
+
+### If a Secret is Exposed on GitHub
+
+1. Go to https://github.com/settings/tokens
+2. **Delete the exposed token immediately**
+3. Generate a new token with required scopes
+4. Rotate any other secrets that might be compromised
+5. The old commit history still contains it, but GitHub scans for leaked tokens and will alert you
+6. For critical breaches, contact GitHub Security: security@github.com
 
 ---
 
@@ -760,6 +836,47 @@ Frontend handles: empty actions → empty state. Missing meta → defaults. Cap 
 
 This section documents how to refresh data, known issues, workarounds, and testing procedures.
 It was added based on real-world experience building and running the pipeline.
+
+## ⚠️ Credential Security (READ FIRST)
+
+**CRITICAL REMINDERS:**
+
+1. **Never commit secrets to GitHub**
+   - API keys, tokens, passwords must NEVER be in code
+   - Use environment variables: `export ANTHROPIC_API_KEY='...'`
+   - Never hardcode in Python, JavaScript, or config files
+
+2. **Always gitignore local files**
+   - `.env` and `.env.local` are ignored
+   - `.claude/settings.local.json` is ignored (never commit it)
+   - Before committing, check: `git diff --cached | grep -E "sk-ant-|ghp_|password"`
+
+3. **If you accidentally expose a secret:**
+   - Delete the token immediately at https://github.com/settings/tokens
+   - Regenerate with new credentials
+   - Never use `--force` push to hide it — the secret is still in git history
+   - Contact GitHub if critical: security@github.com
+
+4. **GitHub Actions is safe**
+   - Automatically provides `${{ secrets.GITHUB_TOKEN }}`
+   - Never add personal tokens to repository secrets
+   - Secrets are encrypted and only accessible during job execution
+
+**Best Practice Checklist Before Any Push:**
+```bash
+# Check for exposed secrets in staged changes
+git diff --cached | grep -iE "apikey|password|token|secret|credentials"
+
+# Search entire codebase for hardcoded secrets
+grep -r "sk-ant-[a-zA-Z0-9]" . --include="*.py" --include="*.js" --include="*.json"
+grep -r "ghp_[a-zA-Z0-9]" . --include="*.py" --include="*.js" --include="*.json"
+
+# Review what you're committing
+git status
+git diff --cached
+```
+
+---
 
 ## Data Refresh Workflow
 
