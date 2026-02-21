@@ -40,12 +40,29 @@ jobs:
           path: frontend/dist
 
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          path: ./artifact
+
+      - name: Deploy to gh-pages
+        run: |
+          cd artifact
+          tar -xzf artifact.tar
+          cd ..
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+          git fetch origin gh-pages
+          git checkout gh-pages
+          rm -rf *
+          cp -r artifact/* .
+          git add -A
+          git commit -m "Deploy from Actions" || true
+          git push origin gh-pages
