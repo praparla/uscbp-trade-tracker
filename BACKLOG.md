@@ -798,6 +798,86 @@ Think tanks (BPC, CFR, Brookings) have built tariff trackers, but each has gaps.
 
 ---
 
+## Engineering & UX Improvements
+
+### Quick Wins
+
+#### 1. Shareable Filter URLs
+Encode current filter state (countries, types, statuses, date range, search text) into URL query parameters so users can share a filtered view via link.
+- **Example:** `#table?countries=China,Canada&type=tariff&status=active`
+- **Effort:** Low (serialize/deserialize filter state to/from `window.location.search`)
+- **Why:** Users frequently want to share "show me all active China tariffs" with colleagues
+
+#### 2. Date Quick-Filter Presets
+Add preset buttons above the date range inputs: "Last 30d", "Last 90d", "2025", "2026", "All".
+- One click sets both start and end date
+- **Effort:** Low (just sets date filter values)
+- **Why:** Most users want common ranges, not arbitrary date pickers
+
+#### 3. Search Result Highlighting
+When text search is active, highlight matching terms in the table rows and dashboard cards.
+- Use `<mark>` tags or CSS background highlight on matched substrings in title/summary fields
+- **Effort:** Low-Medium (string matching + safe HTML rendering)
+- **Why:** Hard to see why a result matched when scanning long titles/summaries
+
+### Medium Effort
+
+#### 4. Keyboard Accessibility
+- Escape key closes modals, dropdowns, and detail panels
+- Arrow keys navigate table rows and map country selection
+- Tab focus visible on all interactive elements (buttons, filters, rows)
+- Enter key opens detail modal from focused table row
+- **Effort:** Medium (event listeners + focus management)
+- **Why:** Power users and accessibility compliance; currently mouse-only
+
+#### 5. Mobile/Tablet Responsiveness
+Dashboard currently targets min 1024px desktop. Add responsive breakpoints:
+- Stack filter panel vertically on small screens
+- Single-column chart layout on tablet
+- Swipeable views on mobile
+- Collapsible table columns (hide Summary, HS Codes on small screens)
+- **Effort:** Medium-High (Tailwind responsive classes + layout restructuring)
+- **Why:** Policy analysts check this on phones during meetings
+
+#### 6. Bundle Code-Splitting
+Lazy-load heavy dependencies per view to reduce initial bundle (currently 882KB):
+- `React.lazy()` for MapView (react-simple-maps + TopoJSON ~180KB)
+- `React.lazy()` for DashboardView (Recharts ~150KB)
+- Keep TableView in main bundle (lightest, most common entry point)
+- **Effort:** Medium (dynamic imports + Suspense boundaries)
+- **Why:** Initial load is slow on mobile; table-only users pay for map+charts they never see
+
+### Higher Effort
+
+#### 7. Automated Data Refresh via GitHub Actions Cron
+Add a scheduled GitHub Actions workflow that runs the scraper weekly and auto-commits updated `trade_actions.json`.
+- Cron: `0 6 * * 1` (Monday 6am UTC)
+- Requires `ANTHROPIC_API_KEY` as GitHub Actions secret
+- Auto-commit + push triggers deploy workflow
+- **Effort:** Medium (Actions workflow + secret management + error handling)
+- **Why:** Currently data updates require manual local scraper runs
+
+#### 8. E2E Tests (Playwright)
+Add end-to-end tests covering full user workflows:
+- Load app → apply filters → switch views → click action → verify modal
+- Filter persistence across view switches
+- URL hash routing (direct navigation to `#map`, `#table`)
+- CSV export downloads file
+- **Effort:** High (Playwright setup + test authoring + CI integration)
+- **Why:** Unit tests don't catch integration bugs between views/filters/routing
+
+### Bug Fixes
+
+#### 9. Filter Panel Expanded State Persists Across View Switches
+When the filter panel is expanded in Table view and user switches to Dashboard, the expanded/collapsed state carries over. Consider:
+- Auto-collapse on view switch (cleaner UX)
+- Or persist intentionally (user preference)
+- Currently inconsistent — sometimes stays expanded, sometimes collapses depending on render timing
+- **Effort:** Low (controlled state reset in view toggle handler)
+- **Why:** Minor UX inconsistency noticed during testing
+
+---
+
 ## Notes for Future Reference
 
 - All gov source integrations should gracefully degrade (i.e., if a source is unavailable, show "Data not available" rather than crashing)
