@@ -778,6 +778,26 @@ Think tanks (BPC, CFR, Brookings) have built tariff trackers, but each has gaps.
 
 ---
 
+## Map Visualization Improvements
+
+### Quick Wins
+- **Zoom & Pan** — Add `<ZoomableGroup>` from react-simple-maps for drag-to-pan and scroll-to-zoom. Helps with small European/Caribbean countries that are hard to click at default zoom.
+- **Animate choropleth on filter change** — CSS transitions on fill color so countries smoothly shift color when filters update.
+- **Country search / jump-to** — Search input above the map to highlight and auto-select a country by name.
+
+### Medium Effort
+- **Bubble overlay for "All" actions** — Translucent overlay or pulsing dot representing global actions, instead of just a text badge.
+- **Mini sparklines in detail panel** — Tiny timeline per country showing when actions were enacted.
+- **Action type filter on map** — Toggle buttons (tariff/duty/embargo/etc.) to re-color choropleth for just that type.
+- **Heatmap mode toggle** — Switch between "count of actions" and "highest duty rate" coloring. Requires parsing duty_rate into numeric values.
+
+### Higher Effort
+- **Timeline scrubber** — Horizontal date slider below the map to see map state at any point in time.
+- **Comparison mode** — Select two countries for side-by-side breakdown of trade actions, duty rates, and timelines.
+- **Region grouping** — Color by region (EU, ASEAN, Americas) with expandable sub-groupings.
+
+---
+
 ## Notes for Future Reference
 
 - All gov source integrations should gracefully degrade (i.e., if a source is unavailable, show "Data not available" rather than crashing)
