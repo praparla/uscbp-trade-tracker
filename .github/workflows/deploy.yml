@@ -34,7 +34,7 @@ jobs:
       - name: Build
         run: cd frontend && npm run build
         env:
-          VITE_BASE_PATH: /trade-timeline/
+          VITE_BASE_PATH: /uscbp-trade-tracker/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
