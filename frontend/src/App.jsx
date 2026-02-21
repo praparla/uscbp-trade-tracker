@@ -9,6 +9,7 @@ import FilterPanel from './components/FilterPanel'
 import DashboardView from './components/DashboardView'
 import TableView from './components/TableView'
 import MapView from './components/MapView'
+import IndustryView from './components/IndustryView'
 import ActionDetailModal from './components/ActionDetailModal'
 import { format, parseISO } from 'date-fns'
 
@@ -18,6 +19,7 @@ function App() {
     const hash = window.location.hash.replace('#', '')
     if (hash === 'table') return 'table'
     if (hash === 'map') return 'map'
+    if (hash === 'industries') return 'industries'
     return 'dashboard'
   })
 
@@ -30,6 +32,7 @@ function App() {
       const hash = window.location.hash.replace('#', '')
       if (hash === 'table') setView('table')
       else if (hash === 'map') setView('map')
+      else if (hash === 'industries') setView('industries')
       else setView('dashboard')
     }
     window.addEventListener('hashchange', onHash)
@@ -202,6 +205,12 @@ function App() {
         )}
         {view === 'map' && (
           <MapView
+            filteredActions={filteredActions}
+            onSelectAction={setSelectedAction}
+          />
+        )}
+        {view === 'industries' && (
+          <IndustryView
             filteredActions={filteredActions}
             onSelectAction={setSelectedAction}
           />

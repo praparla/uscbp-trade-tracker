@@ -39,11 +39,12 @@ describe('MvpBanner', () => {
 })
 
 describe('ViewToggle', () => {
-  it('renders all three buttons', () => {
+  it('renders all four buttons', () => {
     render(<ViewToggle view="dashboard" onViewChange={() => {}} />)
     expect(screen.getByText('Dashboard')).toBeInTheDocument()
     expect(screen.getByText('Table')).toBeInTheDocument()
     expect(screen.getByText('Map')).toBeInTheDocument()
+    expect(screen.getByText('Industries')).toBeInTheDocument()
   })
 
   it('calls onViewChange with table when Table clicked', () => {
@@ -60,6 +61,13 @@ describe('ViewToggle', () => {
     expect(handler).toHaveBeenCalledWith('map')
   })
 
+  it('calls onViewChange with industries when Industries clicked', () => {
+    const handler = vi.fn()
+    render(<ViewToggle view="dashboard" onViewChange={handler} />)
+    fireEvent.click(screen.getByText('Industries'))
+    expect(handler).toHaveBeenCalledWith('industries')
+  })
+
   it('highlights the active view', () => {
     const { rerender } = render(
       <ViewToggle view="dashboard" onViewChange={() => {}} />
@@ -74,6 +82,10 @@ describe('ViewToggle', () => {
     rerender(<ViewToggle view="map" onViewChange={() => {}} />)
     const mapBtn = screen.getByText('Map').closest('button')
     expect(mapBtn.className).toContain('bg-white')
+
+    rerender(<ViewToggle view="industries" onViewChange={() => {}} />)
+    const indBtn = screen.getByText('Industries').closest('button')
+    expect(indBtn.className).toContain('bg-white')
   })
 })
 
