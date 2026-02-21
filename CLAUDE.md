@@ -954,3 +954,193 @@ python main.py --fetch-only   # Verify fetching without classification
   semiconductors, MHDV), IEEPA (Canada, Mexico, China, Brazil, India), Section 301
   (China four-year review, vessel fees, semiconductors), reciprocal tariffs
 - To get API-classified data, run `python scraper/main.py` with a valid API key
+
+---
+
+# Part 5: GitHub Deployment Runbook
+
+## Quick Deploy
+
+Once the code is ready:
+
+```bash
+# 1. Initialize git locally
+cd /path/to/project
+git init
+git add -A
+git commit -m "Initial commit: [project name]"
+
+# 2. Create repo on GitHub (manually via GitHub web UI)
+# Go to https://github.com/new
+# Create with your desired name
+# Do NOT initialize with README or .gitignore
+
+# 3. Generate GitHub personal access token
+# Go to https://github.com/settings/tokens
+# Create new token (classic)
+# Select "repo" scope (full control)
+# Copy token
+
+# 4. Push to GitHub
+git remote add origin https://github.com/YOUR_USERNAME/REPO_NAME.git
+git push -u origin main
+
+# 5. Configure GitHub Pages
+# Go to https://github.com/YOUR_USERNAME/REPO_NAME/settings/pages
+# Or let the workflow do it automatically
+```
+
+## Issues Encountered & Solutions (Deployment 2026-02-21)
+
+### Issue 1: GitHub Personal Access Token Authentication Failures
+
+**Symptom:** `Permission denied` or `403` errors when pushing, even though token appears valid.
+
+**Root Causes:**
+- Token didn't have explicit `repo` scope granted
+- Token was expired or had limited permissions
+- Trying to use token as username instead of password
+
+**Solution:**
+1. Generate a **new classic personal access token** at https://github.com/settings/tokens
+2. **Explicitly select `repo` scope** (full control of repositories)
+3. Use as password in git URL: `https://github_token_value@github.com/user/repo.git`
+4. Test with API first: `curl -H "Authorization: token TOKEN" https://api.github.com/user`
+5. Never embed in scripts; use environment variables or credential helpers
+
+### Issue 2: GitHub Actions Blocked by Billing Issue
+
+**Symptom:** Workflow immediately fails with "job not started - account locked due to billing issue"
+
+**Root Cause:** GitHub account had outstanding balance or unverified payment method
+
+**Solution:** Update billing at https://github.com/settings/billing/overview even though Pages is free (Actions requires valid billing).
+
+### Issue 3: GitHub Pages Base Path Mismatch
+
+**Symptom:** Deployment succeeds but site returns 404
+
+**Root Cause:** `VITE_BASE_PATH` in workflow was hardcoded to `/trade-timeline/` but repo is `uscbp-trade-tracker`
+
+**Solution:** Update workflow to match actual repo name:
+```yaml
+env:
+  VITE_BASE_PATH: /uscbp-trade-tracker/  # ← Change to match YOUR_REPO_NAME
+```
+
+### Issue 4: GitHub Actions Workflow Deployment Failures
+
+**Symptom:** Build succeeds but deployment step fails repeatedly
+
+**Attempted Solutions (failed):**
+- Using `actions/upload-pages-artifact` + `actions/deploy-pages` (requires prior Pages setup)
+- Manual git deployment script (permission/artifact issues)
+- Simplifying workflow structure (didn't resolve underlying issue)
+
+**Working Solution:**
+- Switch to `peaceiris/actions-gh-pages@v3` action (battle-tested third-party)
+- Use `GITHUB_TOKEN` (auto-provisioned by GitHub Actions)
+- Simplify workflow to single `deploy` job (no artifacts)
+
+### Issue 5: GitHub Actions Missing Write Permissions
+
+**Symptom:** Deploy job fails silently; permissions appear present but aren't
+
+**Root Cause:** Workflow had `permissions: { contents: read }` instead of `write`
+
+**Solution:** Update workflow permissions:
+```yaml
+permissions:
+  contents: write  # ← Required for pushing to gh-pages branch
+```
+
+## Working Deployment Workflow
+
+The final working GitHub Actions configuration:
+
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: cd frontend && npm ci
+
+      - name: Build
+        run: cd frontend && npm run build
+        env:
+          VITE_BASE_PATH: /REPO_NAME/  # ← Update to your repo name
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./frontend/dist
+```
+
+**Key Points:**
+- Single `deploy` job (no separate build/deploy)
+- `peaceiris/actions-gh-pages@v3` handles branch creation & pushing
+- `contents: write` permission required
+- `VITE_BASE_PATH` must match GitHub Pages path: `/{REPO_NAME}/`
+- No need to manually create `gh-pages` branch; action creates it
+
+## Deployment Checklist
+
+Before pushing to GitHub for the first time:
+
+- [ ] Initialize git: `git init && git add -A && git commit -m "..."`
+- [ ] Create GitHub repo via web UI (no initialization)
+- [ ] Generate personal access token with `repo` scope
+- [ ] Update `.github/workflows/deploy.yml` with correct `VITE_BASE_PATH`
+- [ ] Push: `git remote add origin ... && git push -u origin main`
+- [ ] Verify build succeeds in Actions (https://github.com/YOUR_USERNAME/REPO/actions)
+- [ ] GitHub Pages auto-deploys to `https://YOUR_USERNAME.github.io/REPO_NAME/`
+- [ ] Test live site (may take 1-2 min after workflow completes)
+
+## Post-Deployment Workflow
+
+After initial deployment:
+
+1. **Update data:** Modify `frontend/src/data/trade_actions.json`
+2. **Commit:** `git commit -am "Update trade actions data"`
+3. **Push:** `git push origin main`
+4. **Auto-deploy:** GitHub Actions builds & deploys automatically
+5. **Live in ~30 seconds:** Changes appear at `https://YOUR_USERNAME.github.io/REPO_NAME/`
+
+## Troubleshooting Production Issues
+
+### Site shows 404
+- Verify `VITE_BASE_PATH` matches repo name
+- Check GitHub Pages settings: https://github.com/USER/REPO/settings/pages
+- Verify `gh-pages` branch exists and has content
+
+### Actions still failing
+- Check Actions logs: https://github.com/USER/REPO/actions
+- Verify permissions: `contents: write` is set
+- Verify Node version (18+ recommended)
+- Test locally: `cd frontend && npm run build`
+
+### Site builds but looks wrong
+- Clear browser cache (Cmd+Shift+R)
+- Check network tab for 404s on assets
+- Verify `VITE_BASE_PATH` in browser console
+- Check `frontend/vite.config.js` has: `base: process.env.VITE_BASE_PATH || '/repo-name/'`
