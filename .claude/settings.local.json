@@ -24,7 +24,18 @@
       "Bash(PATH=\"/Users/pranava/local/node/bin:$PATH\" npx vitest:*)",
       "Bash(git init:*)",
       "Bash(git config:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(gh auth:*)",
+      "mcp__mcp-registry__search_mcp_registry",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(curl:*)",
+      "Bash(~/.git-credentials)",
+      "Bash(git pull:*)",
+      "Bash(curl -s -H \"Authorization: token $GITHUB_TOKEN\" https://api.github.com/repos/praparla/uscbp-trade-tracker/actions/runs -o -)",
+      "Bash(curl -s -H \"Authorization: token $GITHUB_TOKEN\" https://api.github.com/repos/praparla/uscbp-trade-tracker/actions/runs/{}/jobs -o -)"
     ]
   }
 }
