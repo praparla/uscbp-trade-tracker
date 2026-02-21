@@ -133,9 +133,9 @@ Once `trade_volumes.json` exists:
 
 The Industry Impact View (`industryMap.js`) has a two-tier citation system:
 - **Verified (Tier 1):** Directly from CSMS bulletins with `csms_id` + `excerpt` — fully traceable.
-- **External (Tier 2):** Third-party estimates with `source` + optional `url` — must link to a specific public document.
+- **External (Tier 2):** Government sources only with `source` + `url` — must link to a `.gov` page.
 
-Several sectors currently have **empty** external arrays (primary-metals, semiconductors, agriculture) because the original placeholder estimates (e.g., "~$50B imports, Source: U.S. Census Bureau") were removed — they were composite figures with no specific linkable source document.
+**Current state:** All external arrays are empty. External claims from non-government sources (Yale Budget Lab, Tax Foundation, Boston Fed, etc.) were removed. The test suite enforces that any `url` in external claims must point to a `.gov` domain.
 
 **When Census API integration (Phase 2) is implemented, backfill these empty external arrays with real data:**
 
@@ -144,13 +144,33 @@ Several sectors currently have **empty** external arrays (primary-metals, semico
 | primary-metals | Annual import value for HS Ch. 72+73+74+76 | `I_COMMODITY=72*,73*,74*,76*` |
 | semiconductors | Annual import value for HS Ch. 85 (electronic) | `I_COMMODITY=85*` |
 | agriculture | Bilateral export changes (Mexico, China) | `I_COMMODITY=01*-24*&CTY_CODE=2010` |
+| automotive | Auto/parts import value for HS Ch. 87 | `I_COMMODITY=87*` |
+| consumer-goods | Tariff revenue collected | CBP/Treasury `.gov` report page |
 
-Each backfilled claim should include:
-- `source`: "U.S. Census Bureau" (or "USDA" for ag exports)
-- `url`: Direct link to the Census API query or USA Trade Online page that produces the figure
+Each backfilled claim must include:
+- `source`: "U.S. Census Bureau", "CBP", "USDA", etc. (government entity)
+- `url`: Direct link to a `.gov` page that produces the figure
 - `value`: The actual figure from the API response, not a rough estimate
 
-**Rule:** Never add an external claim without a `url` that a user can click to verify the figure. Text-only source attributions (e.g., "Policy analysis estimates") are not acceptable.
+**Rules:**
+- External claims must link to `.gov` domains only (enforced by test suite)
+- Never add an external claim without a `url` that a user can click to verify the figure
+- Text-only source attributions (e.g., "Policy analysis estimates") are not acceptable
+
+### Future: Non-Government Source Integration (Tier 3)
+
+Think tank and academic research (Yale Budget Lab, Tax Foundation, Boston Fed, Brookings, CSIS, etc.) provides valuable context like per-household cost estimates, price impact projections, and trade deficit analysis. These are currently documented in BACKLOG.md's research sections but are **not shown in the Industry View**.
+
+**When ready to expand beyond .gov sources:**
+1. Add a third citation tier: `research[]` — non-gov sources with `source` + `url` + `confidence`
+2. Render with distinct visual treatment (e.g., lighter styling, "Research estimate" label) to clearly separate from government data
+3. Update the `.gov`-only test constraint to allow a configurable allowlist of trusted domains
+4. Candidate sources to add first:
+   - Yale Budget Lab (auto tariff price impact)
+   - Boston/SF/StL Federal Reserve (.gov — already qualifies if using fed.gov URLs)
+   - Tax Foundation (tariff revenue tracking)
+   - ITC research reports (usitc.gov — already qualifies)
+5. Consider a user-facing toggle: "Show research estimates" (off by default)
 
 ---
 

@@ -258,11 +258,12 @@ describe('INDUSTRY_ESTIMATES', () => {
     }
   })
 
-  it('every external claim with a url has a valid https URL', () => {
+  it('every external claim with a url links to a .gov domain', () => {
     for (const sid of sectorIds) {
       for (const ext of INDUSTRY_ESTIMATES[sid].external) {
         if (ext.url) {
-          expect(ext.url, `${sid}: "${ext.claim}" url should be https`).toMatch(/^https:\/\//)
+          expect(ext.url, `${sid}: "${ext.claim}" url must be https`).toMatch(/^https:\/\//)
+          expect(ext.url, `${sid}: "${ext.claim}" url must be a .gov domain`).toMatch(/^https:\/\/[^/]*\.gov/)
         }
       }
     }

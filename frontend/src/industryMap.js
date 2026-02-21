@@ -194,7 +194,8 @@ export function getSectorById(sectorId) {
 
 // -- Curated Sector Estimates with Citations --
 // verified[]: Tier 1 — from CSMS bulletin texts (csms_id + excerpt for audit)
-// external[]: Tier 2 — from public policy analysis (source attribution, not from CBP PDFs)
+// external[]: Tier 2 — from government sources only (CBP, Census, USDA, ITC, etc.)
+//   Must include url linking to a .gov page. Non-gov sources belong in BACKLOG.md.
 
 export const INDUSTRY_ESTIMATES = {
   'primary-metals': {
@@ -217,11 +218,8 @@ export const INDUSTRY_ESTIMATES = {
       { claim: 'Auto parts tariff', value: '25%', csms_id: '64624801',
         excerpt: '25 percent duty on imports' },
     ],
-    external: [
-      { claim: 'Est. per-vehicle price increase', value: '~$4,000',
-        source: 'Yale Budget Lab',
-        url: 'https://budgetlab.yale.edu/research/fiscal-economic-and-distributional-effects-25-auto-tariffs' },
-    ],
+    // TODO: Populate with Census Bureau auto import data (see BACKLOG.md Phase 2)
+    external: [],
     keyMetric: '25% on vehicles and parts — USMCA-eligible parts exempt',
   },
   'semiconductors': {
@@ -261,14 +259,8 @@ export const INDUSTRY_ESTIMATES = {
       { claim: 'Section 301 product exclusions', value: '178 products', csms_id: '66077997',
         excerpt: '164 product specific exclusions and 14 exclusions covering certain manufacturing equipment' },
     ],
-    external: [
-      { claim: '2025 tariff revenue collected', value: '$287B',
-        source: 'Tax Foundation',
-        url: 'https://taxfoundation.org/research/all/federal/trump-tariffs-trade-war/' },
-      { claim: 'Est. per-household annual cost', value: '~$1,000-1,300',
-        source: 'Boston Federal Reserve',
-        url: 'https://www.bostonfed.org/publications/current-policy-perspectives/2025/who-pays-for-tariffs.aspx' },
-    ],
+    // TODO: Populate with CBP/Census trade volume data (see BACKLOG.md Phase 2)
+    external: [],
     keyMetric: '83 countries with individual rates (10%-50%)',
   },
   'luxury-goods': {

@@ -171,9 +171,9 @@ describe('IndustryCard', () => {
           excerpt: 'ad valorem tariff of 50 percent' },
       ],
       external: [
-        { claim: 'Est. per-vehicle price increase', value: '~$4,000',
-          source: 'Yale Budget Lab',
-          url: 'https://budgetlab.yale.edu/research/auto-tariffs' },
+        { claim: 'Steel import volume (2024)', value: '$26B',
+          source: 'U.S. Census Bureau',
+          url: 'https://www.census.gov/foreign-trade/statistics/highlights/annual.html' },
       ],
       keyMetric: 'Copper at 50% — highest Section 232 rate',
     },
@@ -216,7 +216,7 @@ describe('IndustryCard', () => {
 
     expect(screen.getByTestId('external-section')).toBeInTheDocument()
     expect(screen.getByText(/External Estimates/)).toBeInTheDocument()
-    expect(screen.getByText(/Est. per-vehicle price increase/)).toBeInTheDocument()
+    expect(screen.getByText(/Steel import volume/)).toBeInTheDocument()
   })
 
   it('shows action list when expanded', () => {
@@ -327,10 +327,10 @@ describe('IndustryCard', () => {
   it('renders source attribution as clickable link for external claims with url', () => {
     render(<IndustryCard sector={sectorData} onSelectAction={() => {}} />)
     fireEvent.click(screen.getByTestId('industry-card-primary-metals'))
-    const link = screen.getByText(/Yale Budget Lab/)
+    const link = screen.getByText(/U.S. Census Bureau/)
     expect(link).toBeInTheDocument()
     expect(link.tagName).toBe('A')
-    expect(link).toHaveAttribute('href', 'https://budgetlab.yale.edu/research/auto-tariffs')
+    expect(link).toHaveAttribute('href', 'https://www.census.gov/foreign-trade/statistics/highlights/annual.html')
     expect(link).toHaveAttribute('target', '_blank')
   })
 
@@ -339,12 +339,12 @@ describe('IndustryCard', () => {
       ...sectorData,
       estimates: {
         ...sectorData.estimates,
-        external: [{ claim: 'Some estimate', value: '~$10B', source: 'Generic report' }],
+        external: [{ claim: 'Some estimate', value: '~$10B', source: 'CBP guidance' }],
       },
     }
     render(<IndustryCard sector={noUrlSector} onSelectAction={() => {}} />)
     fireEvent.click(screen.getByTestId('industry-card-primary-metals'))
-    const source = screen.getByText(/Generic report/)
+    const source = screen.getByText(/CBP guidance/)
     expect(source.tagName).toBe('SPAN')
   })
 
