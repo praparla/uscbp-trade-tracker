@@ -172,14 +172,16 @@ function App() {
 
       {/* Main content */}
       <main className="max-w-7xl mx-auto px-6 py-6 space-y-6">
-        {/* Shared filter panel */}
-        <FilterPanel
-          filters={filters}
-          filterOptions={filterOptions}
-          updateFilter={updateFilter}
-          clearFilters={clearFilters}
-          hasActiveFilters={hasActiveFilters}
-        />
+        {/* Filter panel — top for table and map views */}
+        {view !== 'dashboard' && (
+          <FilterPanel
+            filters={filters}
+            filterOptions={filterOptions}
+            updateFilter={updateFilter}
+            clearFilters={clearFilters}
+            hasActiveFilters={hasActiveFilters}
+          />
+        )}
 
         {/* View-specific content */}
         {view === 'dashboard' && (
@@ -202,6 +204,17 @@ function App() {
           <MapView
             filteredActions={filteredActions}
             onSelectAction={setSelectedAction}
+          />
+        )}
+
+        {/* Filter panel — bottom for dashboard view */}
+        {view === 'dashboard' && (
+          <FilterPanel
+            filters={filters}
+            filterOptions={filterOptions}
+            updateFilter={updateFilter}
+            clearFilters={clearFilters}
+            hasActiveFilters={hasActiveFilters}
           />
         )}
       </main>
