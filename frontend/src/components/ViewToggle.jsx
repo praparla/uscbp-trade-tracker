@@ -2,8 +2,8 @@ import { BarChart3, Table2, Globe } from 'lucide-react'
 
 const views = [
   { key: 'dashboard', label: 'Dashboard', Icon: BarChart3 },
-  { key: 'table', label: 'Table', Icon: Table2 },
   { key: 'map', label: 'Map', Icon: Globe },
+  { key: 'table', label: 'Table', Icon: Table2 },
 ]
 
 export default function ViewToggle({ view, onViewChange }) {
