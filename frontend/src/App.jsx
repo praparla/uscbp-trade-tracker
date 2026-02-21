@@ -8,6 +8,7 @@ import RefreshButton from './components/RefreshButton'
 import FilterPanel from './components/FilterPanel'
 import DashboardView from './components/DashboardView'
 import TableView from './components/TableView'
+import MapView from './components/MapView'
 import ActionDetailModal from './components/ActionDetailModal'
 import { format, parseISO } from 'date-fns'
 
@@ -15,7 +16,9 @@ function App() {
   // Hash-based view routing
   const [view, setView] = useState(() => {
     const hash = window.location.hash.replace('#', '')
-    return hash === 'table' ? 'table' : 'dashboard'
+    if (hash === 'table') return 'table'
+    if (hash === 'map') return 'map'
+    return 'dashboard'
   })
 
   const [selectedAction, setSelectedAction] = useState(null)
@@ -25,7 +28,9 @@ function App() {
   useEffect(() => {
     const onHash = () => {
       const hash = window.location.hash.replace('#', '')
-      setView(hash === 'table' ? 'table' : 'dashboard')
+      if (hash === 'table') setView('table')
+      else if (hash === 'map') setView('map')
+      else setView('dashboard')
     }
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
@@ -177,18 +182,25 @@ function App() {
         />
 
         {/* View-specific content */}
-        {view === 'dashboard' ? (
+        {view === 'dashboard' && (
           <DashboardView
             stats={stats}
             filteredActions={filteredActions}
             onSelectAction={setSelectedAction}
           />
-        ) : (
+        )}
+        {view === 'table' && (
           <TableView
             sortedActions={sortedActions}
             sortField={sortField}
             sortDirection={sortDirection}
             handleSort={handleSort}
+            onSelectAction={setSelectedAction}
+          />
+        )}
+        {view === 'map' && (
+          <MapView
+            filteredActions={filteredActions}
             onSelectAction={setSelectedAction}
           />
         )}
