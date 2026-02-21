@@ -1,6 +1,132 @@
-import { Search, X, SlidersHorizontal, ChevronDown } from 'lucide-react'
-import { useState } from 'react'
+import { Search, X, SlidersHorizontal, ChevronDown, MapPin } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
 import { ACTION_TYPE_COLORS, ACTION_TYPE_LABELS } from '../constants'
+
+function CountryDropdown({ countries, selected, onUpdate }) {
+  const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState('')
+  const ref = useRef(null)
+
+  useEffect(() => {
+    if (!open) return
+    const handleClick = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [open])
+
+  const filtered = search
+    ? countries.filter((c) => c.toLowerCase().includes(search.toLowerCase()))
+    : countries
+
+  const toggle = (country) => {
+    const next = selected.includes(country)
+      ? selected.filter((c) => c !== country)
+      : [...selected, country]
+    onUpdate(next)
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium border transition-colors ${
+          selected.length > 0
+            ? 'border-blue-300 bg-blue-50 text-blue-700'
+            : 'border-gray-200 text-gray-500 hover:border-gray-300'
+        }`}
+      >
+        <MapPin className="w-3 h-3" />
+        {selected.length > 0
+          ? `${selected.length} countr${selected.length === 1 ? 'y' : 'ies'}`
+          : 'Countries'}
+        <ChevronDown
+          className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''}`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+          {/* Search input */}
+          <div className="p-1.5 border-b border-gray-100">
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search countries..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-6 pr-2 py-1 text-xs border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                autoFocus
+              />
+            </div>
+          </div>
+
+          {/* Country list */}
+          <div className="max-h-48 overflow-y-auto py-1">
+            {filtered.length === 0 ? (
+              <p className="text-xs text-gray-400 px-3 py-2">No matches</p>
+            ) : (
+              filtered.map((country) => {
+                const isActive = selected.includes(country)
+                return (
+                  <button
+                    key={country}
+                    onClick={() => toggle(country)}
+                    className="w-full flex items-center gap-2 px-3 py-1 text-xs hover:bg-gray-50 transition-colors text-left"
+                  >
+                    <span
+                      className={`w-3.5 h-3.5 rounded border flex items-center justify-center shrink-0 ${
+                        isActive
+                          ? 'bg-blue-500 border-blue-500'
+                          : 'border-gray-300'
+                      }`}
+                    >
+                      {isActive && (
+                        <svg
+                          className="w-2.5 h-2.5 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={3}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      )}
+                    </span>
+                    <span className={isActive ? 'text-gray-900 font-medium' : 'text-gray-600'}>
+                      {country}
+                    </span>
+                  </button>
+                )
+              })
+            )}
+          </div>
+
+          {/* Footer */}
+          {selected.length > 0 && (
+            <div className="border-t border-gray-100 px-3 py-1.5 flex justify-between items-center">
+              <span className="text-[10px] text-gray-400">
+                {selected.length} selected
+              </span>
+              <button
+                onClick={() => onUpdate([])}
+                className="text-[10px] text-red-500 hover:text-red-700"
+              >
+                Clear
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function FilterPanel({
   filters,
@@ -115,26 +241,12 @@ export default function FilterPanel({
       {/* Expanded filter controls */}
       {expanded && (
         <div className="px-3 pb-3 pt-1 border-t border-gray-100 flex flex-wrap gap-2 items-start">
-          {/* Country select */}
-          <select
-            multiple
-            value={filters.countries}
-            onChange={(e) => {
-              const selected = Array.from(e.target.selectedOptions, (o) => o.value)
-              updateFilter('countries', selected)
-            }}
-            className="py-1 px-2 text-xs border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 h-[28px] min-w-[150px]"
-            title="Hold Ctrl/Cmd to multi-select countries"
-          >
-            <option value="" disabled>
-              Country...
-            </option>
-            {filterOptions.countries.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+          {/* Country dropdown */}
+          <CountryDropdown
+            countries={filterOptions.countries}
+            selected={filters.countries}
+            onUpdate={(next) => updateFilter('countries', next)}
+          />
 
           {/* Action type pills */}
           <div className="flex flex-wrap items-center gap-1">
