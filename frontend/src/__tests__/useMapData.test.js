@@ -64,6 +64,25 @@ describe('useMapData', () => {
     })
   })
 
+  describe('globalActions', () => {
+    it('returns actions with "All" in countries_affected', () => {
+      const actions = [
+        makeAction('1', ['All']),
+        makeAction('2', ['All']),
+        makeAction('3', ['China']),
+      ]
+      const { result } = renderHook(() => useMapData(actions))
+      expect(result.current.globalActions).toHaveLength(2)
+      expect(result.current.globalActions.map((a) => a.id)).toEqual(['1', '2'])
+    })
+
+    it('returns empty array when no "All" actions', () => {
+      const actions = [makeAction('1', ['China'])]
+      const { result } = renderHook(() => useMapData(actions))
+      expect(result.current.globalActions).toEqual([])
+    })
+  })
+
   describe('allCountryCount', () => {
     it('counts actions with "All" in countries_affected', () => {
       const actions = [
@@ -88,14 +107,14 @@ describe('useMapData', () => {
       expect(result.current.maxCount).toBeGreaterThanOrEqual(1)
     })
 
-    it('includes allCountryCount in max calculation', () => {
+    it('is based on specific actions only, not "All" actions', () => {
       const actions = [
         makeAction('1', ['All']),
         makeAction('2', ['China']),
       ]
       const { result } = renderHook(() => useMapData(actions))
-      // China: 1 specific + 1 all = 2
-      expect(result.current.maxCount).toBe(2)
+      // China: 1 specific only (All not included in maxCount)
+      expect(result.current.maxCount).toBe(1)
     })
 
     it('computes correct max for multiple countries', () => {
@@ -110,30 +129,30 @@ describe('useMapData', () => {
     })
   })
 
-  describe('getCountForTopoName', () => {
-    it('returns count including allCountryCount', () => {
+  describe('getSpecificCountForTopoName', () => {
+    it('returns specific count only (excludes "All")', () => {
       const actions = [
         makeAction('1', ['All']),
         makeAction('2', ['China']),
       ]
       const { result } = renderHook(() => useMapData(actions))
-      expect(result.current.getCountForTopoName('China')).toBe(2) // 1 specific + 1 all
+      expect(result.current.getSpecificCountForTopoName('China')).toBe(1) // specific only
     })
 
-    it('returns just allCountryCount for unknown country', () => {
+    it('returns 0 for country with no targeted actions', () => {
       const actions = [makeAction('1', ['All'])]
       const { result } = renderHook(() => useMapData(actions))
-      expect(result.current.getCountForTopoName('Germany')).toBe(1) // 0 specific + 1 all
+      expect(result.current.getSpecificCountForTopoName('Germany')).toBe(0)
     })
 
     it('returns 0 for unknown country with no "All" actions', () => {
       const actions = [makeAction('1', ['China'])]
       const { result } = renderHook(() => useMapData(actions))
-      expect(result.current.getCountForTopoName('Germany')).toBe(0)
+      expect(result.current.getSpecificCountForTopoName('Germany')).toBe(0)
     })
   })
 
-  describe('getActionsForCountry', () => {
+  describe('getTargetedActionsForCountry', () => {
     it('returns actions for a specific country', () => {
       const actions = [
         makeAction('1', ['China']),
@@ -141,33 +160,34 @@ describe('useMapData', () => {
         makeAction('3', ['China', 'India']),
       ]
       const { result } = renderHook(() => useMapData(actions))
-      const chinaActions = result.current.getActionsForCountry('China')
+      const chinaActions = result.current.getTargetedActionsForCountry('China')
       expect(chinaActions).toHaveLength(2)
       expect(chinaActions.map((a) => a.id)).toEqual(['1', '3'])
     })
 
-    it('includes "All" actions in country results', () => {
+    it('excludes "All" actions from targeted results', () => {
       const actions = [
         makeAction('1', ['All']),
         makeAction('2', ['China']),
         makeAction('3', ['Canada']),
       ]
       const { result } = renderHook(() => useMapData(actions))
-      const chinaActions = result.current.getActionsForCountry('China')
-      expect(chinaActions).toHaveLength(2) // action 1 (All) + action 2 (China)
+      const chinaActions = result.current.getTargetedActionsForCountry('China')
+      expect(chinaActions).toHaveLength(1) // only action 2 (China), not action 1 (All)
+      expect(chinaActions[0].id).toBe('2')
     })
 
     it('returns empty array for unknown country', () => {
       const actions = [makeAction('1', ['China'])]
       const { result } = renderHook(() => useMapData(actions))
-      expect(result.current.getActionsForCountry('Atlantis')).toEqual([])
+      expect(result.current.getTargetedActionsForCountry('Atlantis')).toEqual([])
     })
 
     it('returns empty array for null/undefined country name', () => {
       const actions = [makeAction('1', ['China'])]
       const { result } = renderHook(() => useMapData(actions))
-      expect(result.current.getActionsForCountry(null)).toEqual([])
-      expect(result.current.getActionsForCountry(undefined)).toEqual([])
+      expect(result.current.getTargetedActionsForCountry(null)).toEqual([])
+      expect(result.current.getTargetedActionsForCountry(undefined)).toEqual([])
     })
   })
 
@@ -190,7 +210,8 @@ describe('useMapData', () => {
       expect(Object.keys(result.current.countryActionCounts)).toHaveLength(0)
       expect(result.current.allCountryCount).toBe(0)
       expect(result.current.maxCount).toBe(1)
-      expect(result.current.getActionsForCountry('China')).toEqual([])
+      expect(result.current.getTargetedActionsForCountry('China')).toEqual([])
+      expect(result.current.globalActions).toEqual([])
     })
 
     it('handles actions with empty countries_affected array', () => {
@@ -205,9 +226,9 @@ describe('useMapData', () => {
       // "China" counted in specific, "All" counted in allCountryCount
       expect(result.current.countryActionCounts['China']).toBe(1)
       expect(result.current.allCountryCount).toBe(1)
-      // getActionsForCountry should not duplicate
-      const chinaActions = result.current.getActionsForCountry('China')
-      expect(chinaActions).toHaveLength(1) // same action, included once
+      // getTargetedActionsForCountry includes it because it lists China
+      const chinaActions = result.current.getTargetedActionsForCountry('China')
+      expect(chinaActions).toHaveLength(1)
     })
   })
 })

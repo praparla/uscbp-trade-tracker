@@ -1,17 +1,18 @@
 import { useMemo, useCallback } from 'react'
 import {
   datasetNameToTopoName,
-  topoNameToDatasetName,
   SPECIAL_COUNTRY_VALUES,
 } from '../countryCodeMap'
 
 /**
  * Hook that processes filteredActions into map-ready data structures.
- * Computes action counts per country (keyed by TopoJSON feature name),
- * tracks "All"-country actions separately, and provides a lookup function.
+ *
+ * Choropleth coloring is based on country-SPECIFIC actions only (not "All").
+ * "All" actions are tracked separately and shown as a global badge + grouped
+ * in the detail panel.
  */
 export function useMapData(filteredActions) {
-  // Count actions per TopoJSON country name
+  // Count actions per TopoJSON country name (specific targeting only)
   const countryActionCounts = useMemo(() => {
     const counts = {} // topoName -> count
     for (const action of filteredActions) {
@@ -28,42 +29,39 @@ export function useMapData(filteredActions) {
     return counts
   }, [filteredActions])
 
-  // Count of actions that affect "All" countries
-  const allCountryCount = useMemo(() => {
-    let count = 0
-    for (const action of filteredActions) {
+  // Actions that affect "All" countries (global actions)
+  const globalActions = useMemo(() => {
+    return filteredActions.filter((action) => {
       const countries = action.countries_affected
-      if (Array.isArray(countries) && countries.includes('All')) {
-        count++
-      }
-    }
-    return count
+      return Array.isArray(countries) && countries.includes('All')
+    })
   }, [filteredActions])
 
-  // Max count for color scale normalization (minimum 1 to prevent divide-by-zero)
+  const allCountryCount = globalActions.length
+
+  // Max count for color scale — based on specific actions only
   const maxCount = useMemo(() => {
     const counts = Object.values(countryActionCounts)
-    if (counts.length === 0) return Math.max(allCountryCount, 1)
-    const maxSpecific = Math.max(...counts)
-    return Math.max(maxSpecific + allCountryCount, 1)
-  }, [countryActionCounts, allCountryCount])
+    if (counts.length === 0) return 1
+    return Math.max(...counts, 1)
+  }, [countryActionCounts])
 
-  // Get the effective action count for a TopoJSON feature name
-  const getCountForTopoName = useCallback(
+  // Get the SPECIFIC action count for a TopoJSON feature name (for coloring)
+  const getSpecificCountForTopoName = useCallback(
     (topoName) => {
-      return (countryActionCounts[topoName] || 0) + allCountryCount
+      return countryActionCounts[topoName] || 0
     },
-    [countryActionCounts, allCountryCount]
+    [countryActionCounts]
   )
 
-  // Get filtered actions for a dataset country name
-  const getActionsForCountry = useCallback(
+  // Get targeted actions for a dataset country name (excludes "All" actions)
+  const getTargetedActionsForCountry = useCallback(
     (datasetName) => {
       if (!datasetName) return []
       return filteredActions.filter((action) => {
         const countries = action.countries_affected
         if (!Array.isArray(countries)) return false
-        return countries.includes(datasetName) || countries.includes('All')
+        return countries.includes(datasetName)
       })
     },
     [filteredActions]
@@ -72,8 +70,9 @@ export function useMapData(filteredActions) {
   return {
     countryActionCounts,
     allCountryCount,
+    globalActions,
     maxCount,
-    getCountForTopoName,
-    getActionsForCountry,
+    getSpecificCountForTopoName,
+    getTargetedActionsForCountry,
   }
 }

@@ -1,5 +1,3 @@
-import { Info } from 'lucide-react'
-
 const GRADIENT_STOPS = [
   { offset: '0%', color: '#f1f5f9' },   // gray-100 (no actions)
   { offset: '30%', color: '#dbeafe' },   // blue-100 (low)
@@ -7,8 +5,8 @@ const GRADIENT_STOPS = [
   { offset: '100%', color: '#1e3a5f' },  // deep navy (high)
 ]
 
-export default function MapLegend({ maxCount, allCountryCount }) {
-  const hasData = maxCount > 0 && maxCount > allCountryCount
+export default function MapLegend({ maxCount }) {
+  const hasData = maxCount > 0
 
   return (
     <div className="mt-3 pt-3 border-t border-gray-100">
@@ -43,16 +41,9 @@ export default function MapLegend({ maxCount, allCountryCount }) {
           {hasData ? maxCount : 'No data'}
         </span>
       </div>
-
-      <div className="flex items-center gap-1.5 mt-1.5">
-        <span className="text-[10px] text-gray-400">Trade actions per country</span>
-        {allCountryCount > 0 && (
-          <span className="inline-flex items-center gap-0.5 text-[10px] text-blue-500">
-            <Info className="w-2.5 h-2.5" />
-            +{allCountryCount} action{allCountryCount !== 1 ? 's' : ''} affect all countries
-          </span>
-        )}
-      </div>
+      <span className="text-[10px] text-gray-400 mt-1 block">
+        Country-targeted trade actions
+      </span>
     </div>
   )
 }

@@ -20,7 +20,7 @@ vi.mock('../data/countries-110m.json', () => ({
 }))
 
 describe('MapCountryDetail', () => {
-  const sampleActions = [
+  const targetedActions = [
     {
       id: 'act-1',
       title: 'Section 232 Steel Tariffs',
@@ -49,36 +49,55 @@ describe('MapCountryDetail', () => {
     },
   ]
 
-  it('renders country name and action count', () => {
+  const globalActions = [
+    {
+      id: 'act-g1',
+      title: 'Reciprocal Tariffs Baseline',
+      action_type: 'tariff',
+      status: 'active',
+      effective_date: '2025-04-05',
+      duty_rate: '10%',
+      countries_affected: ['All'],
+    },
+  ]
+
+  it('renders country name and total action count', () => {
     render(
       <MapCountryDetail
         countryName="China"
-        actions={sampleActions}
+        targetedActions={targetedActions}
+        globalActions={globalActions}
         onSelectAction={() => {}}
         onClose={() => {}}
       />
     )
     expect(screen.getByText('China')).toBeInTheDocument()
-    expect(screen.getByText('3 actions')).toBeInTheDocument()
+    // Total count badge: 3 targeted + 1 global = 4
+    expect(screen.getByText('4')).toBeInTheDocument()
   })
 
-  it('renders singular "action" for count of 1', () => {
+  it('renders grouped sections: Targeted and Global', () => {
     render(
       <MapCountryDetail
-        countryName="Canada"
-        actions={[sampleActions[0]]}
+        countryName="China"
+        targetedActions={targetedActions}
+        globalActions={globalActions}
         onSelectAction={() => {}}
         onClose={() => {}}
       />
     )
-    expect(screen.getByText('1 action')).toBeInTheDocument()
+    expect(screen.getByText('Targeted')).toBeInTheDocument()
+    expect(screen.getByText('Global')).toBeInTheDocument()
+    expect(screen.getByText('(3)')).toBeInTheDocument() // targeted count
+    expect(screen.getByText(/\(1\)/)).toBeInTheDocument() // global count
   })
 
   it('renders action titles', () => {
     render(
       <MapCountryDetail
         countryName="China"
-        actions={sampleActions}
+        targetedActions={targetedActions}
+        globalActions={globalActions}
         onSelectAction={() => {}}
         onClose={() => {}}
       />
@@ -86,13 +105,15 @@ describe('MapCountryDetail', () => {
     expect(screen.getByText('Section 232 Steel Tariffs')).toBeInTheDocument()
     expect(screen.getByText('IEEPA Duties on Chinese Goods')).toBeInTheDocument()
     expect(screen.getByText('Section 301 Review')).toBeInTheDocument()
+    expect(screen.getByText('Reciprocal Tariffs Baseline')).toBeInTheDocument()
   })
 
   it('renders duty rate when present', () => {
     render(
       <MapCountryDetail
         countryName="China"
-        actions={sampleActions}
+        targetedActions={targetedActions}
+        globalActions={[]}
         onSelectAction={() => {}}
         onClose={() => {}}
       />
@@ -106,13 +127,14 @@ describe('MapCountryDetail', () => {
     render(
       <MapCountryDetail
         countryName="China"
-        actions={sampleActions}
+        targetedActions={targetedActions}
+        globalActions={[]}
         onSelectAction={handler}
         onClose={() => {}}
       />
     )
     fireEvent.click(screen.getByText('Section 232 Steel Tariffs'))
-    expect(handler).toHaveBeenCalledWith(sampleActions[0])
+    expect(handler).toHaveBeenCalledWith(targetedActions[0])
   })
 
   it('calls onClose when close button is clicked', () => {
@@ -120,7 +142,8 @@ describe('MapCountryDetail', () => {
     render(
       <MapCountryDetail
         countryName="China"
-        actions={sampleActions}
+        targetedActions={targetedActions}
+        globalActions={[]}
         onSelectAction={() => {}}
         onClose={onClose}
       />
@@ -134,46 +157,78 @@ describe('MapCountryDetail', () => {
     render(
       <MapCountryDetail
         countryName="Germany"
-        actions={[]}
+        targetedActions={[]}
+        globalActions={[]}
         onSelectAction={() => {}}
         onClose={() => {}}
       />
     )
-    expect(screen.getByText('0 actions')).toBeInTheDocument()
+    expect(screen.getByText('0')).toBeInTheDocument()
     expect(
       screen.getByText(/No trade actions match current filters for Germany/)
     ).toBeInTheDocument()
   })
 
-  it('handles undefined actions prop', () => {
+  it('handles undefined targeted/global props', () => {
     render(
       <MapCountryDetail
         countryName="Germany"
-        actions={undefined}
+        targetedActions={undefined}
+        globalActions={undefined}
         onSelectAction={() => {}}
         onClose={() => {}}
       />
     )
-    expect(screen.getByText('0 actions')).toBeInTheDocument()
+    expect(screen.getByText('0')).toBeInTheDocument()
   })
 
-  it('handles null actions prop', () => {
+  it('handles null targeted/global props', () => {
     render(
       <MapCountryDetail
         countryName="Germany"
-        actions={null}
+        targetedActions={null}
+        globalActions={null}
         onSelectAction={() => {}}
         onClose={() => {}}
       />
     )
-    expect(screen.getByText('0 actions')).toBeInTheDocument()
+    expect(screen.getByText('0')).toBeInTheDocument()
+  })
+
+  it('shows only targeted section when no global actions', () => {
+    render(
+      <MapCountryDetail
+        countryName="China"
+        targetedActions={targetedActions}
+        globalActions={[]}
+        onSelectAction={() => {}}
+        onClose={() => {}}
+      />
+    )
+    expect(screen.getByText('Targeted')).toBeInTheDocument()
+    expect(screen.queryByText('Global')).toBeNull()
+  })
+
+  it('shows only global section when no targeted actions', () => {
+    render(
+      <MapCountryDetail
+        countryName="Germany"
+        targetedActions={[]}
+        globalActions={globalActions}
+        onSelectAction={() => {}}
+        onClose={() => {}}
+      />
+    )
+    expect(screen.queryByText('Targeted')).toBeNull()
+    expect(screen.getByText('Global')).toBeInTheDocument()
   })
 
   it('displays formatted date for actions with effective_date', () => {
     render(
       <MapCountryDetail
         countryName="China"
-        actions={[sampleActions[0]]}
+        targetedActions={[targetedActions[0]]}
+        globalActions={[]}
         onSelectAction={() => {}}
         onClose={() => {}}
       />
@@ -185,7 +240,8 @@ describe('MapCountryDetail', () => {
     render(
       <MapCountryDetail
         countryName="China"
-        actions={[sampleActions[2]]}
+        targetedActions={[targetedActions[2]]}
+        globalActions={[]}
         onSelectAction={() => {}}
         onClose={() => {}}
       />
@@ -197,7 +253,8 @@ describe('MapCountryDetail', () => {
     render(
       <MapCountryDetail
         countryName="Democratic Republic of the Congo"
-        actions={[]}
+        targetedActions={[]}
+        globalActions={[]}
         onSelectAction={() => {}}
         onClose={() => {}}
       />
@@ -209,38 +266,29 @@ describe('MapCountryDetail', () => {
 
 describe('MapLegend', () => {
   it('renders gradient bar with 0 and max labels', () => {
-    render(<MapLegend maxCount={15} allCountryCount={2} />)
+    render(<MapLegend maxCount={15} />)
     expect(screen.getByText('0')).toBeInTheDocument()
     expect(screen.getByText('15')).toBeInTheDocument()
   })
 
-  it('shows allCountryCount note when present', () => {
-    render(<MapLegend maxCount={10} allCountryCount={3} />)
-    expect(
-      screen.getByText(/\+3 actions affect all countries/)
-    ).toBeInTheDocument()
-  })
-
-  it('uses singular "action" when allCountryCount is 1', () => {
-    render(<MapLegend maxCount={10} allCountryCount={1} />)
-    expect(
-      screen.getByText(/\+1 action affect all countries/)
-    ).toBeInTheDocument()
-  })
-
-  it('hides allCountryCount note when 0', () => {
-    render(<MapLegend maxCount={10} allCountryCount={0} />)
-    expect(screen.queryByText(/affect all countries/)).toBeNull()
-  })
-
   it('shows "No data" when maxCount is 0', () => {
-    render(<MapLegend maxCount={0} allCountryCount={0} />)
+    render(<MapLegend maxCount={0} />)
     expect(screen.getByText('No data')).toBeInTheDocument()
   })
 
-  it('renders the "Trade actions per country" label', () => {
-    render(<MapLegend maxCount={5} allCountryCount={0} />)
-    expect(screen.getByText('Trade actions per country')).toBeInTheDocument()
+  it('renders the "Country-targeted trade actions" label', () => {
+    render(<MapLegend maxCount={5} />)
+    expect(screen.getByText('Country-targeted trade actions')).toBeInTheDocument()
+  })
+
+  it('renders gradient SVG when data exists', () => {
+    const { container } = render(<MapLegend maxCount={10} />)
+    expect(container.querySelector('svg')).toBeInTheDocument()
+  })
+
+  it('renders gray bar when no data', () => {
+    const { container } = render(<MapLegend maxCount={0} />)
+    expect(container.querySelector('svg')).toBeNull()
   })
 })
 
@@ -271,5 +319,43 @@ describe('MapView (mocked)', () => {
     render(<MapView filteredActions={actions} onSelectAction={() => {}} />)
     expect(screen.getByTestId('composable-map')).toBeInTheDocument()
     expect(screen.getByText('Trade Actions by Country')).toBeInTheDocument()
+  })
+
+  it('shows global actions badge when "All" actions exist', () => {
+    const actions = [
+      {
+        id: '1',
+        title: 'Global Tariff',
+        countries_affected: ['All'],
+        action_type: 'tariff',
+        status: 'active',
+        effective_date: '2025-01-01',
+      },
+      {
+        id: '2',
+        title: 'Another Global',
+        countries_affected: ['All'],
+        action_type: 'duty',
+        status: 'active',
+        effective_date: '2025-02-01',
+      },
+    ]
+    render(<MapView filteredActions={actions} onSelectAction={() => {}} />)
+    expect(screen.getByText(/2 global actions apply to all countries/)).toBeInTheDocument()
+  })
+
+  it('hides global actions badge when no "All" actions', () => {
+    const actions = [
+      {
+        id: '1',
+        title: 'Test',
+        countries_affected: ['China'],
+        action_type: 'tariff',
+        status: 'active',
+        effective_date: '2025-01-01',
+      },
+    ]
+    render(<MapView filteredActions={actions} onSelectAction={() => {}} />)
+    expect(screen.queryByText(/global actions apply to all countries/)).toBeNull()
   })
 })

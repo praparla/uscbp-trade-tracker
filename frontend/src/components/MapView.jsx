@@ -4,7 +4,7 @@ import {
   Geographies,
   Geography,
 } from 'react-simple-maps'
-import { SearchX } from 'lucide-react'
+import { SearchX, Globe } from 'lucide-react'
 import { useMapData } from '../hooks/useMapData'
 import { topoNameToDatasetName } from '../countryCodeMap'
 import MapCountryDetail from './MapCountryDetail'
@@ -23,7 +23,6 @@ function getColorForCount(count, maxCount) {
   if (count === 0) return '#f1f5f9'
   const ratio = Math.max(0, Math.min(count / maxCount, 1))
 
-  // Find the two stops to interpolate between
   let lower = COLOR_STOPS[0]
   let upper = COLOR_STOPS[COLOR_STOPS.length - 1]
   for (let i = 0; i < COLOR_STOPS.length - 1; i++) {
@@ -42,11 +41,10 @@ function getColorForCount(count, maxCount) {
   return `rgb(${r},${g},${b})`
 }
 
-// Tooltip positioning: clamp to viewport
 function clampTooltipPosition(x, y) {
   const pad = 16
-  const tooltipW = 180
-  const tooltipH = 60
+  const tooltipW = 200
+  const tooltipH = 70
 
   let left = x + 12
   let top = y - tooltipH - 8
@@ -66,24 +64,24 @@ export default function MapView({ filteredActions, onSelectAction }) {
   const [tooltip, setTooltip] = useState(null)
 
   const {
-    countryActionCounts,
     allCountryCount,
+    globalActions,
     maxCount,
-    getCountForTopoName,
-    getActionsForCountry,
+    getSpecificCountForTopoName,
+    getTargetedActionsForCountry,
   } = useMapData(filteredActions)
 
-  const selectedActions = useMemo(() => {
+  // Get grouped actions for the selected country
+  const selectedTargetedActions = useMemo(() => {
     if (!selectedCountry) return []
-    return getActionsForCountry(selectedCountry)
-  }, [selectedCountry, getActionsForCountry])
+    return getTargetedActionsForCountry(selectedCountry)
+  }, [selectedCountry, getTargetedActionsForCountry])
 
   const handleCountryClick = useCallback(
     (geo) => {
       const topoName = geo.properties?.name
       if (!topoName) return
       const datasetName = topoNameToDatasetName(topoName)
-      // Toggle: click same country to deselect
       setSelectedCountry((prev) => (prev === datasetName ? null : datasetName))
     },
     []
@@ -98,10 +96,16 @@ export default function MapView({ filteredActions, onSelectAction }) {
       if (typeof clientX !== 'number' || typeof clientY !== 'number') return
 
       const datasetName = topoNameToDatasetName(topoName)
-      const count = getCountForTopoName(topoName)
-      setTooltip({ name: datasetName, count, x: clientX, y: clientY })
+      const specificCount = getSpecificCountForTopoName(topoName)
+      setTooltip({
+        name: datasetName,
+        specificCount,
+        globalCount: allCountryCount,
+        x: clientX,
+        y: clientY,
+      })
     },
-    [getCountForTopoName]
+    [getSpecificCountForTopoName, allCountryCount]
   )
 
   const handleMouseMove = useCallback(
@@ -144,9 +148,21 @@ export default function MapView({ filteredActions, onSelectAction }) {
           }`}
         >
           <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-3">
-              Trade Actions by Country
-            </h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-medium text-gray-700">
+                Trade Actions by Country
+              </h3>
+
+              {/* Global actions badge */}
+              {allCountryCount > 0 && (
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-indigo-50 border border-indigo-200 rounded-full">
+                  <Globe className="w-3 h-3 text-indigo-500" />
+                  <span className="text-xs font-medium text-indigo-700">
+                    {allCountryCount} global action{allCountryCount !== 1 ? 's' : ''} apply to all countries
+                  </span>
+                </div>
+              )}
+            </div>
 
             <div className="relative">
               <ComposableMap
@@ -160,8 +176,8 @@ export default function MapView({ filteredActions, onSelectAction }) {
                   {({ geographies }) =>
                     geographies.map((geo) => {
                       const topoName = geo.properties?.name
-                      const count = topoName
-                        ? getCountForTopoName(topoName)
+                      const specificCount = topoName
+                        ? getSpecificCountForTopoName(topoName)
                         : 0
                       const datasetName = topoName
                         ? topoNameToDatasetName(topoName)
@@ -172,7 +188,7 @@ export default function MapView({ filteredActions, onSelectAction }) {
                         <Geography
                           key={geo.rsmKey}
                           geography={geo}
-                          fill={getColorForCount(count, maxCount)}
+                          fill={getColorForCount(specificCount, maxCount)}
                           stroke={isSelected ? '#1a2332' : '#e2e8f0'}
                           strokeWidth={isSelected ? 1.5 : 0.5}
                           style={{
@@ -180,7 +196,7 @@ export default function MapView({ filteredActions, onSelectAction }) {
                             hover: {
                               outline: 'none',
                               fill: isSelected
-                                ? getColorForCount(count, maxCount)
+                                ? getColorForCount(specificCount, maxCount)
                                 : '#93c5fd',
                               cursor: 'pointer',
                               strokeWidth: 1,
@@ -199,10 +215,7 @@ export default function MapView({ filteredActions, onSelectAction }) {
               </ComposableMap>
             </div>
 
-            <MapLegend
-              maxCount={maxCount}
-              allCountryCount={allCountryCount}
-            />
+            <MapLegend maxCount={maxCount} />
           </div>
         </div>
 
@@ -211,7 +224,8 @@ export default function MapView({ filteredActions, onSelectAction }) {
           <div className="xl:w-2/5 animate-slideIn">
             <MapCountryDetail
               countryName={selectedCountry}
-              actions={selectedActions}
+              targetedActions={selectedTargetedActions}
+              globalActions={globalActions}
               onSelectAction={onSelectAction}
               onClose={() => setSelectedCountry(null)}
             />
@@ -219,16 +233,31 @@ export default function MapView({ filteredActions, onSelectAction }) {
         )}
       </div>
 
-      {/* Tooltip (rendered outside flex to avoid layout interference) */}
+      {/* Tooltip */}
       {tooltip && (
         <div
           className="fixed z-50 pointer-events-none bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-lg"
           style={clampTooltipPosition(tooltip.x, tooltip.y)}
         >
           <p className="font-medium">{tooltip.name}</p>
-          <p className="text-gray-300">
-            {tooltip.count} trade action{tooltip.count !== 1 ? 's' : ''}
-          </p>
+          {tooltip.specificCount > 0 ? (
+            <>
+              <p className="text-blue-300">
+                {tooltip.specificCount} targeted action{tooltip.specificCount !== 1 ? 's' : ''}
+              </p>
+              {tooltip.globalCount > 0 && (
+                <p className="text-gray-400">
+                  +{tooltip.globalCount} global
+                </p>
+              )}
+            </>
+          ) : tooltip.globalCount > 0 ? (
+            <p className="text-gray-400">
+              {tooltip.globalCount} global action{tooltip.globalCount !== 1 ? 's' : ''} only
+            </p>
+          ) : (
+            <p className="text-gray-400">No trade actions</p>
+          )}
         </div>
       )}
     </div>
