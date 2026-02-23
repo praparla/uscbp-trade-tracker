@@ -794,6 +794,97 @@ Frontend handles: empty actions → empty state. Missing meta → defaults. Cap 
 - Pre-filter testable with sample text snippets.
 - Truncation testable with sample long document.
 
+## Rule 15: Defensive Optional Field Handling
+
+> **Every optional field in a React component MUST be guarded before rendering.**
+
+This project's `TradeAction` schema has many optional fields (`source_url`, `duty_rate`, `federal_authority`, `hs_codes`, `raw_excerpt`, `expiration_date`). Historically, components rendered these without null checks, causing missing sections or subtle rendering bugs.
+
+**Required pattern for optional fields:**
+```jsx
+{/* String fields: truthiness check */}
+{action.source_url && (
+  <a href={action.source_url}>View source</a>
+)}
+
+{/* Array fields: truthiness + length check */}
+{action.hs_codes && action.hs_codes.length > 0 && (
+  <div>{action.hs_codes.map(...)}</div>
+)}
+
+{/* Date fields: fallback to "N/A" */}
+<p>{formatDate(action.expiration_date)}</p>  {/* formatDate returns "N/A" for falsy */}
+```
+
+**Testing requirement:** When adding or modifying a component that accepts optional props, add tests for:
+1. Field is `undefined` — section must not render
+2. Field is `null` — section must not render
+3. Field is `""` (empty string) — section must not render
+4. Field is present — section renders correctly
+
+**Known data state:** 25 of 41 actions have `source_url: ""`. This is expected for manually curated data. Never assume `source_url` is always populated.
+
+## Rule 16: Citation Verifiability
+
+> **Every external claim MUST have a clickable source URL, or it must be removed.**
+
+This project was burned multiple times by adding data claims without verifiable links:
+- "Source: U.S. Census Bureau trade data (2024)" with no URL — users can't verify
+- Non-government sources (Yale Budget Lab, Tax Foundation) violated `.gov`-only policy
+
+**Requirements:**
+1. **Verified claims (Tier 1):** Must have `csms_id` and `excerpt` matching text in `scraper/cache/texts/csms_{id}.txt`.
+2. **External claims (Tier 2):** Must have `source` text AND `url` field with a clickable `.gov` URL. If no `.gov` URL exists, the claim must not be included.
+3. **No composite/estimated figures:** Claims like "~$50B (composite figure)" without a single linkable source are not allowed.
+4. **Automated verification:** `npm run validate-citations` must pass. The `industryCitations.test.js` suite checks that cached text files exist and excerpts are found.
+
+**When adding new industry estimates:**
+- Find the specific `.gov` page with the claim
+- Include the full URL in the `url` field
+- Run `npm run validate-citations` before committing
+
+## Rule 17: Edge Case Test Coverage
+
+> **New tests must cover edge cases, not just happy paths.**
+
+Historical pattern: tests were written for the "everything works" scenario but missed null/empty/combined states.
+
+**When writing tests for a component or hook, always include:**
+1. **Empty input:** Empty array `[]`, empty object `{}`, empty string `""`
+2. **Null/undefined input:** `null`, `undefined` for every optional prop
+3. **Single item:** Array with exactly one element (boundary case)
+4. **Combined states:** Multiple filters active simultaneously, not just one at a time
+5. **Boundary values:** First/last page of pagination, exact date boundaries, 0 count
+
+**For data-driven components specifically:**
+- Actions with no `effective_date` (null) — how does sorting/filtering handle them?
+- Actions with `countries_affected: ["All"]` — do country filters match correctly?
+- Actions with empty `hs_codes: []` — does the HS codes section hide?
+- Actions with `source_url: ""` — does the link section hide?
+
+## Rule 18: Deploy Config Consistency
+
+> **All deploy-related values must derive from a single source of truth.**
+
+Historical pattern: `VITE_BASE_PATH` was hardcoded to `/trade-timeline/` in the workflow but the repo was actually named `uscbp-trade-tracker`, causing 404s on GitHub Pages.
+
+**Requirements:**
+1. `VITE_BASE_PATH` in `.github/workflows/deploy.yml` MUST match the actual GitHub repo name: `/uscbp-trade-tracker/`
+2. `vite.config.js` reads from `process.env.VITE_BASE_PATH` with fallback.
+3. `permissions: contents: write` is REQUIRED in the workflow (not `read`).
+4. Use `peaceiris/actions-gh-pages@v3` — not the native GitHub Pages actions (which require prior manual setup).
+5. **Before changing the repo name or base path:** Update ALL of these locations:
+   - `.github/workflows/deploy.yml` → `VITE_BASE_PATH` env var
+   - `frontend/vite.config.js` → fallback value in `base`
+   - `README.md` → live site URL
+
+**Pre-push deploy checklist:**
+```bash
+# Verify base path consistency
+grep -r "VITE_BASE_PATH\|base:" .github/workflows/ frontend/vite.config.js
+# Should all reference the same repo name
+```
+
 ## Rule 14: Security & Credential Handling
 
 ### Never Commit Secrets
