@@ -1101,12 +1101,20 @@ python main.py --fetch-only   # Verify fetching without classification
 |-----------|-------------------|
 | `frontend/src/__tests__/dataValidation.test.js` | JSON schema, field types, date formats, cross-entry integrity |
 | `frontend/src/__tests__/useTradeData.test.js` | Hook: filtering, sorting, stats computation |
+| `frontend/src/__tests__/useTradeDataEdgeCases.test.js` | Filter combinations, "All" country matching, null date sorting, stats edge cases |
 | `frontend/src/__tests__/useMapData.test.js` | Hook: country counts, global actions, targeted actions, edge cases |
+| `frontend/src/__tests__/useRefresh.test.js` | Hook: dev mode detection, /status probe, cleanup on unmount |
 | `frontend/src/__tests__/countryCodeMap.test.js` | Country name ↔ ISO3 mapping, reverse map, special values |
+| `frontend/src/__tests__/constants.test.js` | ACTION_TYPE_COLORS, ACTION_TYPE_LABELS, STATUS_COLORS, ITEMS_PER_PAGE, DEV_API_URL |
 | `frontend/src/__tests__/components.test.jsx` | Component rendering: MvpBanner, ViewToggle, SummaryCards, FilterPanel basics, Modal |
+| `frontend/src/__tests__/actionDetailEdgeCases.test.jsx` | Modal: empty source_url, missing optional fields (duty_rate, federal_authority, hs_codes, excerpt) |
 | `frontend/src/__tests__/filterPanel.test.jsx` | FilterPanel: collapsible, pills, CountryDropdown (search, checkboxes, click-outside), date inputs |
 | `frontend/src/__tests__/tableView.test.jsx` | TableView: rendering, sorting, pagination, row clicks, CSV export, empty state |
 | `frontend/src/__tests__/dashboardView.test.jsx` | DashboardView: rendering, empty state, chart sections, timeline |
+| `frontend/src/__tests__/timelineChart.test.jsx` | TimelineChart: empty state, dot rendering, date filtering, click handler |
+| `frontend/src/__tests__/countryChart.test.jsx` | CountryChart: empty state, top-10 limit, bar chart rendering |
+| `frontend/src/__tests__/typeChart.test.jsx` | TypeChart: empty state, pie chart rendering, unknown types |
+| `frontend/src/__tests__/refreshButton.test.jsx` | RefreshButton: dev mode hide/show, disabled state, spinner, click handler |
 | `frontend/src/__tests__/mapView.test.jsx` | MapView, MapCountryDetail, MapLegend: rendering, interactions, empty states |
 | `frontend/src/__tests__/industryView.test.jsx` | IndustryView, IndustryCard, charts: rendering, expand/collapse, citations, sorting, empty states |
 | `frontend/src/__tests__/industryMap.test.js` | Sector definitions, ACTION_INDUSTRY_MAP coverage, keyword fallback, INDUSTRY_ESTIMATES structure |
@@ -1121,17 +1129,19 @@ python main.py --fetch-only   # Verify fetching without classification
 | `scraper/tests/test_models.py` | Pydantic model validation, serialization |
 | `scraper/tests/test_pipeline.py` | End-to-end: dry-run, fetch-only, output schema |
 
-## Current Data State (as of 2026-02-21)
+## Current Data State (as of 2026-02-23)
 
 - **166 CSMS bulletin texts** cached in `scraper/cache/texts/`
 - **41 trade actions** in `trade_actions.json` (manually curated from CBP guidance pages)
+- **25 of 41 actions** have empty `source_url` — expected for manually curated entries (not a bug)
+- **16 actions** have valid source URLs pointing to .gov domains (CBP, USTR, GovDelivery)
 - **8 industry sectors** mapped in `industryMap.js` with curated estimates and citations
 - **Date coverage:** January 1, 2025 → January 15, 2026
 - **Key tariff programs covered:** Section 232 (steel, aluminum, autos, copper, timber,
   semiconductors, MHDV), IEEPA (Canada, Mexico, China, Brazil, India), Section 301
   (China four-year review, vessel fees, semiconductors), reciprocal tariffs
 - **Industry Impact View:** 4th tab with sector cards, comparison charts, two-tier citations
-- **930+ frontend tests** across 14 test files (Vitest + React Testing Library)
+- **1024 frontend tests** across 22 test files (Vitest + React Testing Library)
 - To get API-classified data, run `python scraper/main.py` with a valid API key
 
 ---
