@@ -8,13 +8,16 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 
 export default function IndustryComparisonChart({ chartData }) {
+  const { isMobile } = useMediaQuery()
+
   if (chartData.length === 0) {
     return (
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-6">
         <h3 className="text-sm font-medium text-gray-700 mb-4">Actions by Industry</h3>
-        <div className="h-[280px] flex items-center justify-center text-gray-400 text-sm">
+        <div className="h-[220px] sm:h-[280px] flex items-center justify-center text-gray-400 text-sm">
           No data to display
         </div>
       </div>
@@ -24,19 +27,19 @@ export default function IndustryComparisonChart({ chartData }) {
   const sorted = [...chartData].sort((a, b) => b.actions - a.actions)
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
-      <h3 className="text-sm font-medium text-gray-700 mb-4">
+    <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-6">
+      <h3 className="text-sm font-medium text-gray-700 mb-3 sm:mb-4">
         Actions by Industry Sector
       </h3>
-      <ResponsiveContainer width="100%" height={280}>
-        <BarChart data={sorted} layout="vertical" margin={{ left: 30, right: 20 }}>
+      <ResponsiveContainer width="100%" height={isMobile ? 220 : 280}>
+        <BarChart data={sorted} layout="vertical" margin={{ left: isMobile ? 10 : 30, right: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-          <XAxis type="number" tick={{ fontSize: 12 }} allowDecimals={false} />
+          <XAxis type="number" tick={{ fontSize: isMobile ? 10 : 12 }} allowDecimals={false} />
           <YAxis
             dataKey="sector"
             type="category"
-            tick={{ fontSize: 11 }}
-            width={140}
+            tick={{ fontSize: isMobile ? 9 : 11 }}
+            width={isMobile ? 100 : 140}
           />
           <Tooltip
             contentStyle={{

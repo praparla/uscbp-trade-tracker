@@ -74,7 +74,7 @@ function App() {
   // Empty state
   if (allActions.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="text-center max-w-md">
           <Shield className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h1 className="text-xl font-semibold text-gray-700 mb-2">
@@ -83,7 +83,7 @@ function App() {
           <p className="text-gray-500 text-sm mb-4">
             Run the scraper to populate the data:
           </p>
-          <code className="block bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm">
+          <code className="block bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm break-all">
             cd scraper && python main.py
           </code>
         </div>
@@ -98,25 +98,28 @@ function App() {
 
       {/* Header */}
       <header className="bg-navy-900 text-white">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-3">
-                <Shield className="w-6 h-6 text-blue-400" />
-                <h1 className="text-lg font-semibold">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
+            {/* Left: Logo + title */}
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400 flex-shrink-0" />
+                <h1 className="text-base sm:text-lg font-semibold truncate">
                   U.S. Trade Actions Timeline
                 </h1>
               </div>
-              <p className="text-sm text-gray-400 mt-0.5 ml-9">
+              <p className="text-xs sm:text-sm text-gray-400 mt-0.5 ml-7 sm:ml-9 truncate">
                 Last updated: {formatTimestamp(meta.generated_at)}
                 {meta.errors?.length > 0 && (
                   <span className="text-amber-400 ml-2">
-                    ({meta.errors.length} document{meta.errors.length !== 1 ? 's' : ''} had errors)
+                    ({meta.errors.length} error{meta.errors.length !== 1 ? 's' : ''})
                   </span>
                 )}
               </p>
             </div>
-            <div className="flex items-center gap-3">
+
+            {/* Right: Controls */}
+            <div className="flex items-center gap-2 sm:gap-3 ml-7 sm:ml-0">
               <button
                 onClick={() => setShowAbout((s) => !s)}
                 className="p-1.5 hover:bg-white/10 rounded-md text-gray-400 hover:text-white transition-colors"
@@ -138,12 +141,12 @@ function App() {
       {/* About panel */}
       {showAbout && meta.cost_optimization && (
         <div className="bg-blue-50 border-b border-blue-200">
-          <div className="max-w-7xl mx-auto px-6 py-3">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3">
             <div className="flex items-start justify-between">
-              <div>
+              <div className="min-w-0">
                 <h3 className="text-sm font-medium text-blue-900">About this data</h3>
                 <div className="text-xs text-blue-700 mt-1 space-y-0.5">
-                  <p>
+                  <p className="break-words">
                     Model: <span className="font-mono">{meta.cost_optimization.model_used}</span>
                     {' | '}
                     API calls: {meta.cost_optimization.new_api_calls}
@@ -153,7 +156,7 @@ function App() {
                       <>{' | '}Est. cost: ${meta.cost_optimization.estimated_cost_usd.toFixed(2)}</>
                     )}
                   </p>
-                  <p>
+                  <p className="break-words">
                     CSMS entries scanned: {meta.csms_entries_scanned || 'N/A'}
                     {' | '}
                     Date range: {meta.date_range_start} to {meta.date_range_end}
@@ -164,7 +167,7 @@ function App() {
               </div>
               <button
                 onClick={() => setShowAbout(false)}
-                className="text-blue-600 hover:text-blue-800 text-xs"
+                className="text-blue-600 hover:text-blue-800 text-xs ml-2 flex-shrink-0"
               >
                 Close
               </button>
@@ -174,7 +177,7 @@ function App() {
       )}
 
       {/* Main content */}
-      <main className="max-w-7xl mx-auto px-6 py-6 space-y-6">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Filter panel — top for table and map views */}
         {view !== 'dashboard' && (
           <FilterPanel

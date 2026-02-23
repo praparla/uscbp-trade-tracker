@@ -13,6 +13,9 @@ export default {
           700: '#334155',
         },
       },
+      screens: {
+        'xs': '375px',
+      },
     },
   },
   plugins: [],

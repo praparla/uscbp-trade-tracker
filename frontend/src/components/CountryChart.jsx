@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 
 const COLORS = [
   '#3b82f6', '#8b5cf6', '#ef4444', '#f59e0b', '#14b8a6',
@@ -16,6 +17,8 @@ const COLORS = [
 ]
 
 export default function CountryChart({ countryCounts }) {
+  const { isMobile } = useMediaQuery()
+
   const data = useMemo(() => {
     return Object.entries(countryCounts)
       .sort((a, b) => b[1] - a[1])
@@ -25,9 +28,9 @@ export default function CountryChart({ countryCounts }) {
 
   if (data.length === 0) {
     return (
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-6">
         <h3 className="text-sm font-medium text-gray-700 mb-4">Actions by Country</h3>
-        <div className="h-[280px] flex items-center justify-center text-gray-400 text-sm">
+        <div className="h-[220px] sm:h-[280px] flex items-center justify-center text-gray-400 text-sm">
           No data to display
         </div>
       </div>
@@ -35,19 +38,19 @@ export default function CountryChart({ countryCounts }) {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
-      <h3 className="text-sm font-medium text-gray-700 mb-4">
+    <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-6">
+      <h3 className="text-sm font-medium text-gray-700 mb-3 sm:mb-4">
         Top Countries by Actions
       </h3>
-      <ResponsiveContainer width="100%" height={280}>
-        <BarChart data={data} layout="vertical" margin={{ left: 20, right: 20 }}>
+      <ResponsiveContainer width="100%" height={isMobile ? 220 : 280}>
+        <BarChart data={data} layout="vertical" margin={{ left: isMobile ? 10 : 20, right: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-          <XAxis type="number" tick={{ fontSize: 12 }} allowDecimals={false} />
+          <XAxis type="number" tick={{ fontSize: isMobile ? 10 : 12 }} allowDecimals={false} />
           <YAxis
             dataKey="name"
             type="category"
-            tick={{ fontSize: 12 }}
-            width={80}
+            tick={{ fontSize: isMobile ? 10 : 12 }}
+            width={isMobile ? 65 : 80}
           />
           <Tooltip
             contentStyle={{

@@ -8,8 +8,11 @@ import {
   Legend,
 } from 'recharts'
 import { ACTION_TYPE_COLORS, ACTION_TYPE_LABELS } from '../constants'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 
 export default function TypeChart({ typeCounts }) {
+  const { isMobile } = useMediaQuery()
+
   const data = useMemo(() => {
     return Object.entries(typeCounts)
       .sort((a, b) => b[1] - a[1])
@@ -22,9 +25,9 @@ export default function TypeChart({ typeCounts }) {
 
   if (data.length === 0) {
     return (
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-6">
         <h3 className="text-sm font-medium text-gray-700 mb-4">Actions by Type</h3>
-        <div className="h-[280px] flex items-center justify-center text-gray-400 text-sm">
+        <div className="h-[220px] sm:h-[280px] flex items-center justify-center text-gray-400 text-sm">
           No data to display
         </div>
       </div>
@@ -37,19 +40,19 @@ export default function TypeChart({ typeCounts }) {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
-      <h3 className="text-sm font-medium text-gray-700 mb-4">Actions by Type</h3>
-      <ResponsiveContainer width="100%" height={280}>
+    <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-6">
+      <h3 className="text-sm font-medium text-gray-700 mb-3 sm:mb-4">Actions by Type</h3>
+      <ResponsiveContainer width="100%" height={isMobile ? 220 : 280}>
         <PieChart>
           <Pie
             data={data}
             cx="50%"
             cy="50%"
-            innerRadius={55}
-            outerRadius={95}
+            innerRadius={isMobile ? 40 : 55}
+            outerRadius={isMobile ? 70 : 95}
             paddingAngle={2}
             dataKey="value"
-            label={renderLabel}
+            label={isMobile ? false : renderLabel}
             labelLine={false}
           >
             {data.map((entry) => (
@@ -68,9 +71,9 @@ export default function TypeChart({ typeCounts }) {
             }}
           />
           <Legend
-            wrapperStyle={{ fontSize: '12px' }}
+            wrapperStyle={{ fontSize: isMobile ? '10px' : '12px' }}
             iconType="circle"
-            iconSize={8}
+            iconSize={isMobile ? 6 : 8}
           />
         </PieChart>
       </ResponsiveContainer>

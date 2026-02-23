@@ -984,14 +984,25 @@ When text search is active, highlight matching terms in the table rows and dashb
 - **Effort:** Medium (event listeners + focus management)
 - **Why:** Power users and accessibility compliance; currently mouse-only
 
-#### 5. Mobile/Tablet Responsiveness
-Dashboard currently targets min 1024px desktop. Add responsive breakpoints:
-- Stack filter panel vertically on small screens
-- Single-column chart layout on tablet
-- Swipeable views on mobile
-- Collapsible table columns (hide Summary, HS Codes on small screens)
-- **Effort:** Medium-High (Tailwind responsive classes + layout restructuring)
-- **Why:** Policy analysts check this on phones during meetings
+#### 5. ~~Mobile/Tablet Responsiveness~~ ✅ COMPLETED (Feb 2026)
+Fully responsive across all 4 views. Key changes:
+- `useMediaQuery` hook auto-detects mobile/tablet/desktop (breakpoints: sm=640, lg=1024)
+- Custom `xs: 375px` Tailwind breakpoint for small phones
+- TableView: card-based layout on mobile, full table on desktop
+- ViewToggle: icon-only on mobile with tooltip titles
+- ActionDetailModal: bottom-sheet on mobile, centered on desktop
+- FilterPanel: wrapping layout, stacked date inputs on mobile
+- Charts: responsive heights and font sizes via useMediaQuery
+- All grid layouts: responsive column counts (1 → 2 → 4)
+- Removed `min-w-[1024px]` blocker from index.html
+
+**Possible extensions:**
+- Swipe gestures for view switching on mobile (e.g., react-swipeable)
+- Pull-to-refresh gesture for dev mode refresh button
+- Orientation-aware chart sizing (landscape vs portrait)
+- Touch-optimized map interactions (pinch-to-zoom, long-press for details)
+- PWA support (service worker, manifest.json, offline mode)
+- Responsive font scaling via Tailwind `text-[clamp(...)]` for better readability
 
 #### 6. Bundle Code-Splitting
 Lazy-load heavy dependencies per view to reduce initial bundle (currently 882KB):

@@ -11,12 +11,11 @@ import MapCountryDetail from './MapCountryDetail'
 import MapLegend from './MapLegend'
 import topojsonData from '../data/countries-110m.json'
 
-// Choropleth color stops: gray → light blue → blue → deep navy
 const COLOR_STOPS = [
-  [0.0, [241, 245, 249]],    // #f1f5f9 gray-100
-  [0.15, [219, 234, 254]],   // #dbeafe blue-100
-  [0.5, [59, 130, 246]],     // #3b82f6 blue-500
-  [1.0, [30, 58, 95]],       // #1e3a5f deep navy
+  [0.0, [241, 245, 249]],
+  [0.15, [219, 234, 254]],
+  [0.5, [59, 130, 246]],
+  [1.0, [30, 58, 95]],
 ]
 
 function getColorForCount(count, maxCount) {
@@ -52,6 +51,9 @@ function clampTooltipPosition(x, y) {
   if (left + tooltipW > window.innerWidth - pad) {
     left = x - tooltipW - 12
   }
+  if (left < pad) {
+    left = pad
+  }
   if (top < pad) {
     top = y + 16
   }
@@ -71,7 +73,6 @@ export default function MapView({ filteredActions, onSelectAction }) {
     getTargetedActionsForCountry,
   } = useMapData(filteredActions)
 
-  // Get grouped actions for the selected country
   const selectedTargetedActions = useMemo(() => {
     if (!selectedCountry) return []
     return getTargetedActionsForCountry(selectedCountry)
@@ -123,11 +124,10 @@ export default function MapView({ filteredActions, onSelectAction }) {
     setTooltip(null)
   }, [])
 
-  // Empty state
   if (filteredActions.length === 0) {
     return (
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-12 text-center">
-        <SearchX className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8 sm:p-12 text-center">
+        <SearchX className="w-10 h-10 sm:w-12 sm:h-12 text-gray-300 mx-auto mb-3" />
         <p className="text-gray-500 text-sm">
           No trade actions match your filters.
         </p>
@@ -140,24 +140,23 @@ export default function MapView({ filteredActions, onSelectAction }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col xl:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
         {/* Map + Legend */}
         <div
           className={`transition-all duration-300 ${
-            selectedCountry ? 'xl:w-3/5' : 'w-full'
+            selectedCountry ? 'lg:w-3/5' : 'w-full'
           }`}
         >
-          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
-            <div className="flex items-center justify-between mb-3">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-3 sm:p-4">
+            <div className="flex flex-col xs:flex-row xs:items-center justify-between mb-2 sm:mb-3 gap-1">
               <h3 className="text-sm font-medium text-gray-700">
                 Trade Actions by Country
               </h3>
 
-              {/* Global actions badge */}
               {allCountryCount > 0 && (
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-indigo-50 border border-indigo-200 rounded-full">
+                <div className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 bg-indigo-50 border border-indigo-200 rounded-full self-start">
                   <Globe className="w-3 h-3 text-indigo-500" />
-                  <span className="text-xs font-medium text-indigo-700">
+                  <span className="text-[10px] sm:text-xs font-medium text-indigo-700">
                     {allCountryCount} global action{allCountryCount !== 1 ? 's' : ''} apply to all countries
                   </span>
                 </div>
@@ -221,7 +220,7 @@ export default function MapView({ filteredActions, onSelectAction }) {
 
         {/* Detail panel */}
         {selectedCountry && (
-          <div className="xl:w-2/5 animate-slideIn">
+          <div className="lg:w-2/5 animate-slideIn">
             <MapCountryDetail
               countryName={selectedCountry}
               targetedActions={selectedTargetedActions}
@@ -236,7 +235,7 @@ export default function MapView({ filteredActions, onSelectAction }) {
       {/* Tooltip */}
       {tooltip && (
         <div
-          className="fixed z-50 pointer-events-none bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-lg"
+          className="fixed z-50 pointer-events-none bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-lg max-w-[180px] sm:max-w-[200px]"
           style={clampTooltipPosition(tooltip.x, tooltip.y)}
         >
           <p className="font-medium">{tooltip.name}</p>

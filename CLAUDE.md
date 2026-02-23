@@ -205,6 +205,7 @@ trade-timeline/
 │   │   │   ├── useTradeData.js       # Load + filter + sort logic
 │   │   │   ├── useMapData.js         # Country counts + actions for map view
 │   │   │   ├── useIndustryData.js    # Industry sector aggregation + rate analysis
+│   │   │   ├── useMediaQuery.js      # Responsive breakpoints (mobile/tablet/desktop detection)
 │   │   │   └── useRefresh.js         # Local dev refresh API hook
 │   │   ├── industryMap.js            # Action→industry mapping, sector defs, cited estimates
 │   │   ├── countryCodeMap.js         # TopoJSON name → dataset country name mapping
@@ -471,7 +472,10 @@ Layout (top to bottom):
   - sanction: #8b5cf6 (purple), duty: #14b8a6 (teal), exclusion: #ec4899 (pink)
   - suspension: #f97316 (orange), modification: #6b7280 (gray)
   - investigation: #6366f1 (indigo), other: #94a3b8 (slate)
-- Desktop-first, min width 1024px.
+- Fully responsive: mobile (< 640px), tablet (640–1023px), desktop (1024px+).
+- Auto-detects device via `useMediaQuery` hook (breakpoints: sm=640, lg=1024).
+- Mobile: icon-only ViewToggle, card-based TableView, bottom-sheet modals, stacked layouts.
+- Custom `xs: 375px` Tailwind breakpoint for very small phones.
 - Empty state: centered message with instructions to run scraper.
 
 ### GitHub Pages Deployment
@@ -563,7 +567,7 @@ Layout (top to bottom):
 - MVP banner reads `meta.max_pdfs_cap` from JSON — not hardcoded.
 - If `meta.cost_optimization` present, display in an unobtrusive "About this data" section.
 - Charts: interactive with tooltips. Colors: consistent via `constants.js`.
-- Desktop-first, min 1024px. No localStorage/sessionStorage.
+- Fully responsive: mobile, tablet, desktop via `useMediaQuery` hook. No localStorage/sessionStorage.
 - View toggle updates `window.location.hash`. Refresh button silently auto-detects API.
 
 **Tools/Libraries:** `react`, `recharts`, `react-simple-maps`, `tailwindcss`, `lucide-react`, `date-fns`
@@ -1107,6 +1111,7 @@ python main.py --fetch-only   # Verify fetching without classification
 | `frontend/src/__tests__/industryView.test.jsx` | IndustryView, IndustryCard, charts: rendering, expand/collapse, citations, sorting, empty states |
 | `frontend/src/__tests__/industryMap.test.js` | Sector definitions, ACTION_INDUSTRY_MAP coverage, keyword fallback, INDUSTRY_ESTIMATES structure |
 | `frontend/src/__tests__/useIndustryData.test.js` | Hook: sector aggregation, rate parsing, HS code counting, sorting, edge cases |
+| `frontend/src/__tests__/mobileResponsive.test.jsx` | Mobile responsiveness: useMediaQuery hook, card layout, responsive labels, bottom-sheet modal |
 | `frontend/src/__tests__/industryCitations.test.js` | Citation traceability: cached text files exist, excerpts found, mapping coverage |
 | `frontend/src/__tests__/validateIndustryCitations.mjs` | Standalone: citation audit with CSMS text file verification |
 | `frontend/src/__tests__/validateData.mjs` | Standalone: known tariff facts cross-referenced with data |
@@ -1126,7 +1131,7 @@ python main.py --fetch-only   # Verify fetching without classification
   semiconductors, MHDV), IEEPA (Canada, Mexico, China, Brazil, India), Section 301
   (China four-year review, vessel fees, semiconductors), reciprocal tariffs
 - **Industry Impact View:** 4th tab with sector cards, comparison charts, two-tier citations
-- **907 frontend tests** across 13 test files (Vitest + React Testing Library)
+- **930+ frontend tests** across 14 test files (Vitest + React Testing Library)
 - To get API-classified data, run `python scraper/main.py` with a valid API key
 
 ---

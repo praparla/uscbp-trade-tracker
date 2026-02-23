@@ -47,7 +47,7 @@ function CountryDropdown({ countries, selected, onUpdate }) {
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+        <div className="absolute top-full left-0 mt-1 w-56 max-w-[calc(100vw-2rem)] bg-white border border-gray-200 rounded-lg shadow-lg z-50">
           {/* Search input */}
           <div className="p-1.5 border-b border-gray-100">
             <div className="relative">
@@ -148,7 +148,7 @@ export default function FilterPanel({
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
       {/* Collapsed bar */}
-      <div className="flex items-center gap-2 px-3 py-2">
+      <div className="flex items-center gap-2 px-2 sm:px-3 py-2 flex-wrap sm:flex-nowrap">
         <button
           onClick={() => setExpanded((e) => !e)}
           className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors"
@@ -166,7 +166,7 @@ export default function FilterPanel({
         </button>
 
         {/* Inline search — always visible */}
-        <div className="relative flex-1 max-w-xs ml-2">
+        <div className="relative flex-1 min-w-[120px] max-w-xs ml-2 order-1 sm:order-none">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
           <input
             type="text"
@@ -178,7 +178,7 @@ export default function FilterPanel({
         </div>
 
         {/* Active filter pills — always visible */}
-        <div className="flex items-center gap-1 flex-1 overflow-x-auto">
+        <div className="flex items-center gap-1 flex-1 overflow-x-auto flex-wrap sm:flex-nowrap order-3 sm:order-none w-full sm:w-auto">
           {filters.countries.length > 0 && (
             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded text-[10px] font-medium shrink-0">
               {filters.countries.length} countr{filters.countries.length === 1 ? 'y' : 'ies'}
@@ -280,7 +280,7 @@ export default function FilterPanel({
           </div>
 
           {/* Status pills */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-wrap">
             {filterOptions.statuses.map((status) => {
               const isActive = filters.status.includes(status)
               const statusColors = {
@@ -317,7 +317,7 @@ export default function FilterPanel({
           </div>
 
           {/* Date range */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-col xs:flex-row w-full xs:w-auto">
             <input
               type="date"
               value={filters.dateStart}

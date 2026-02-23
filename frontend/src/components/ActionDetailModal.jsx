@@ -18,7 +18,7 @@ export default function ActionDetailModal({ action, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -26,29 +26,29 @@ export default function ActionDetailModal({ action, onClose }) {
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto">
+      <div className="relative bg-white rounded-t-xl sm:rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] sm:max-h-[85vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl">
-          <div className="flex items-start justify-between gap-4">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sm:py-4 rounded-t-xl">
+          <div className="flex items-start justify-between gap-3 sm:gap-4">
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-1 flex-wrap">
                 <span
-                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-white"
+                  className="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium text-white"
                   style={{ backgroundColor: typeColor }}
                 >
                   {ACTION_TYPE_LABELS[action.action_type] || action.action_type}
                 </span>
-                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusStyle.bg} ${statusStyle.text}`}>
+                <span className={`inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium ${statusStyle.bg} ${statusStyle.text}`}>
                   {action.status}
                 </span>
               </div>
-              <h2 className="text-lg font-semibold text-gray-900 leading-tight">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900 leading-tight">
                 {action.title}
               </h2>
             </div>
             <button
               onClick={onClose}
-              className="p-1 hover:bg-gray-100 rounded-md text-gray-400 hover:text-gray-600"
+              className="p-1 hover:bg-gray-100 rounded-md text-gray-400 hover:text-gray-600 flex-shrink-0"
             >
               <X className="w-5 h-5" />
             </button>
@@ -56,7 +56,7 @@ export default function ActionDetailModal({ action, onClose }) {
         </div>
 
         {/* Body */}
-        <div className="px-6 py-5 space-y-5">
+        <div className="px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
           {/* Summary */}
           <div>
             <h3 className="text-sm font-medium text-gray-500 mb-1">Summary</h3>
@@ -64,7 +64,7 @@ export default function ActionDetailModal({ action, onClose }) {
           </div>
 
           {/* Info grid */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="flex items-start gap-2">
               <Calendar className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
               <div>
@@ -115,7 +115,7 @@ export default function ActionDetailModal({ action, onClose }) {
           {action.duty_rate && (
             <div>
               <h3 className="text-sm font-medium text-gray-500 mb-1">Duty Rate</h3>
-              <p className="text-sm text-gray-800 font-mono bg-gray-50 px-3 py-2 rounded-md">
+              <p className="text-sm text-gray-800 font-mono bg-gray-50 px-3 py-2 rounded-md break-all">
                 {action.duty_rate}
               </p>
             </div>

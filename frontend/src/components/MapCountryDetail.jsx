@@ -25,7 +25,7 @@ function ActionRow({ action, onSelectAction }) {
   return (
     <button
       onClick={() => onSelectAction(action)}
-      className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer"
+      className="w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-gray-50 transition-colors cursor-pointer"
     >
       <div className="flex items-start gap-2">
         <span
@@ -36,11 +36,11 @@ function ActionRow({ action, onSelectAction }) {
         </span>
 
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-gray-900 line-clamp-2">
+          <p className="text-xs sm:text-sm font-medium text-gray-900 line-clamp-2">
             {action.title}
           </p>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-xs text-gray-500">
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
+            <span className="text-[10px] sm:text-xs text-gray-500">
               {formatDate(action.effective_date)}
             </span>
             <span className="flex items-center gap-1">
@@ -52,7 +52,7 @@ function ActionRow({ action, onSelectAction }) {
               </span>
             </span>
             {action.duty_rate && (
-              <span className="text-xs font-mono text-gray-600 bg-gray-100 px-1 rounded">
+              <span className="text-[10px] sm:text-xs font-mono text-gray-600 bg-gray-100 px-1 rounded">
                 {action.duty_rate}
               </span>
             )}
@@ -77,13 +77,13 @@ export default function MapCountryDetail({
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200">
+      <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-50 border-b border-gray-200">
         <div className="flex items-center gap-2 min-w-0">
           <MapPin className="w-4 h-4 text-blue-500 shrink-0" />
-          <h3 className="font-medium text-gray-900 truncate" title={countryName}>
+          <h3 className="font-medium text-gray-900 truncate text-sm sm:text-base" title={countryName}>
             {countryName}
           </h3>
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 shrink-0">
+          <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium bg-blue-100 text-blue-800 shrink-0">
             {totalCount}
           </span>
         </div>
@@ -96,8 +96,8 @@ export default function MapCountryDetail({
         </button>
       </div>
 
-      {/* Action list — grouped */}
-      <div className="max-h-[400px] xl:max-h-[calc(100vh-320px)] overflow-y-auto">
+      {/* Action list */}
+      <div className="max-h-[350px] lg:max-h-[400px] xl:max-h-[calc(100vh-320px)] overflow-y-auto">
         {totalCount === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 px-4">
             <AlertCircle className="w-8 h-8 text-gray-300 mb-2" />
@@ -107,10 +107,9 @@ export default function MapCountryDetail({
           </div>
         ) : (
           <>
-            {/* Targeted section */}
             {safeTargeted.length > 0 && (
               <div>
-                <div className="flex items-center gap-1.5 px-4 py-2 bg-blue-50 border-b border-blue-100">
+                <div className="flex items-center gap-1.5 px-3 sm:px-4 py-2 bg-blue-50 border-b border-blue-100">
                   <Crosshair className="w-3 h-3 text-blue-600" />
                   <span className="text-xs font-semibold text-blue-700 uppercase tracking-wide">
                     Targeted
@@ -131,16 +130,15 @@ export default function MapCountryDetail({
               </div>
             )}
 
-            {/* Global section */}
             {safeGlobal.length > 0 && (
               <div>
-                <div className="flex items-center gap-1.5 px-4 py-2 bg-gray-50 border-y border-gray-200">
+                <div className="flex items-center gap-1.5 px-3 sm:px-4 py-2 bg-gray-50 border-y border-gray-200">
                   <Globe className="w-3 h-3 text-gray-500" />
                   <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     Global
                   </span>
                   <span className="text-xs text-gray-400">
-                    ({safeGlobal.length}) — applies to all countries
+                    ({safeGlobal.length})
                   </span>
                 </div>
                 <div className="divide-y divide-gray-100">

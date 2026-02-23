@@ -46,27 +46,27 @@ const cards = [
 
 export default function SummaryCards({ stats }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
       {cards.map((card) => {
         const Icon = card.icon
         return (
           <div
             key={card.key}
-            className="bg-white border border-gray-200 rounded-lg shadow-sm p-4"
+            className="bg-white border border-gray-200 rounded-lg shadow-sm p-2.5 sm:p-4"
           >
-            <div className="flex items-center gap-3">
-              <div className={`${card.bg} p-2 rounded-lg`}>
-                <Icon className={`w-5 h-5 ${card.color}`} />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className={`${card.bg} p-1.5 sm:p-2 rounded-lg flex-shrink-0`}>
+                <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${card.color}`} />
               </div>
               <div className="min-w-0">
-                <p className="text-xs text-gray-500 uppercase tracking-wide">
+                <p className="text-[10px] sm:text-xs text-gray-500 uppercase tracking-wide">
                   {card.label}
                 </p>
-                <p className="text-xl font-bold text-gray-900 truncate">
+                <p className="text-lg sm:text-xl font-bold text-gray-900 truncate">
                   {card.getValue(stats)}
                 </p>
                 {card.getSub && (
-                  <p className="text-xs text-gray-400">{card.getSub(stats)}</p>
+                  <p className="text-[10px] sm:text-xs text-gray-400">{card.getSub(stats)}</p>
                 )}
               </div>
             </div>
