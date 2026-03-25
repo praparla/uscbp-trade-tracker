@@ -39,12 +39,13 @@ describe('MvpBanner', () => {
 })
 
 describe('ViewToggle', () => {
-  it('renders all four buttons', () => {
+  it('renders all five buttons', () => {
     render(<ViewToggle view="dashboard" onViewChange={() => {}} />)
     expect(screen.getByText('Dashboard')).toBeInTheDocument()
     expect(screen.getByText('Table')).toBeInTheDocument()
     expect(screen.getByText('Map')).toBeInTheDocument()
     expect(screen.getByText('Industries')).toBeInTheDocument()
+    expect(screen.getByText('Court')).toBeInTheDocument()
   })
 
   it('calls onViewChange with table when Table clicked', () => {
@@ -86,6 +87,10 @@ describe('ViewToggle', () => {
     rerender(<ViewToggle view="industries" onViewChange={() => {}} />)
     const indBtn = screen.getByText('Industries').closest('button')
     expect(indBtn.className).toContain('bg-white')
+
+    rerender(<ViewToggle view="court-rulings" onViewChange={() => {}} />)
+    const courtBtn = screen.getByText('Court').closest('button')
+    expect(courtBtn.className).toContain('bg-white')
   })
 })
 

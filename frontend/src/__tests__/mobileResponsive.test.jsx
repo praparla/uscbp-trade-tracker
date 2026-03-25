@@ -203,12 +203,12 @@ describe('TableView — Mobile Card Layout', () => {
 // ─── ViewToggle — Mobile Icon-Only Mode ─────────────────────────
 
 describe('ViewToggle — Responsive Labels', () => {
-  it('renders all four buttons with icons', async () => {
+  it('renders all five buttons with icons', async () => {
     const ViewToggle = (await import('../components/ViewToggle')).default
     render(<ViewToggle view="dashboard" onViewChange={() => {}} />)
-    // The buttons should always render (4 total)
+    // The buttons should always render (5 total)
     const buttons = screen.getAllByRole('button')
-    expect(buttons.length).toBe(4)
+    expect(buttons.length).toBe(5)
   })
 
   it('labels are wrapped in spans for responsive hiding', async () => {
@@ -216,11 +216,12 @@ describe('ViewToggle — Responsive Labels', () => {
     const { container } = render(<ViewToggle view="dashboard" onViewChange={() => {}} />)
     // Labels are in spans with class hidden xs:inline
     const spans = container.querySelectorAll('span.hidden')
-    expect(spans.length).toBe(4)
+    expect(spans.length).toBe(5)
     expect(spans[0].textContent).toBe('Dashboard')
     expect(spans[1].textContent).toBe('Map')
     expect(spans[2].textContent).toBe('Table')
     expect(spans[3].textContent).toBe('Industries')
+    expect(spans[4].textContent).toBe('Court')
   })
 
   it('buttons have title attributes for mobile tooltips', async () => {

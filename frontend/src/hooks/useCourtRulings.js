@@ -17,13 +17,11 @@ export function useCourtRulings(filters = {}) {
       }
 
       // Date range filter — uses filing_date
-      if (filters.dateStart) {
+      if (filters.dateStart || filters.dateEnd) {
         const filingDate = ruling.filing_date || ''
-        if (filingDate && filingDate < filters.dateStart) return false
-      }
-      if (filters.dateEnd) {
-        const filingDate = ruling.filing_date || ''
-        if (filingDate && filingDate > filters.dateEnd) return false
+        if (!filingDate) return false
+        if (filters.dateStart && filingDate < filters.dateStart) return false
+        if (filters.dateEnd && filingDate > filters.dateEnd) return false
       }
 
       // Text search
