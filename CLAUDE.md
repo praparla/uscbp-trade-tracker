@@ -80,10 +80,13 @@ The scraper combines data from both sources to build the `trade_actions.json`.
 
 ## Prerequisites & API Key Setup
 
-### Anthropic API Key (Required for PDF text extraction)
+### Anthropic API Key (for PDF text extraction)
 
-This project uses Claude's API to extract structured trade action data from raw PDF text. You need an API key:
+This project uses Claude's API to extract structured trade action data from raw PDF text.
 
+**If using Claude Code:** The developer has Claude Code subscription tokens — no separate API key is needed. Claude Code can invoke the scraper's classification step directly using its built-in API access.
+
+**If running standalone (without Claude Code):**
 1. **Create an Anthropic account:** Go to https://console.anthropic.com/ and sign up.
 2. **Add billing:** Navigate to Settings → Billing and add a payment method. The API is pay-per-use.
 3. **Generate an API key:** Go to Settings → API Keys → Create Key. Copy it.
