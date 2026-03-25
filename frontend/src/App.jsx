@@ -10,6 +10,7 @@ import DashboardView from './components/DashboardView'
 import TableView from './components/TableView'
 import MapView from './components/MapView'
 import IndustryView from './components/IndustryView'
+import CourtRulingsView from './components/CourtRulingsView'
 import ActionDetailModal from './components/ActionDetailModal'
 import { format, parseISO } from 'date-fns'
 
@@ -20,6 +21,7 @@ function App() {
     if (hash === 'table') return 'table'
     if (hash === 'map') return 'map'
     if (hash === 'industries') return 'industries'
+    if (hash === 'court-rulings') return 'court-rulings'
     return 'dashboard'
   })
 
@@ -33,6 +35,7 @@ function App() {
       if (hash === 'table') setView('table')
       else if (hash === 'map') setView('map')
       else if (hash === 'industries') setView('industries')
+      else if (hash === 'court-rulings') setView('court-rulings')
       else setView('dashboard')
     }
     window.addEventListener('hashchange', onHash)
@@ -215,6 +218,17 @@ function App() {
         {view === 'industries' && (
           <IndustryView
             filteredActions={filteredActions}
+            onSelectAction={setSelectedAction}
+          />
+        )}
+        {view === 'court-rulings' && (
+          <CourtRulingsView
+            filters={{
+              countries: filters.countries,
+              dateStart: filters.dateStart,
+              dateEnd: filters.dateEnd,
+              search: filters.search,
+            }}
             onSelectAction={setSelectedAction}
           />
         )}

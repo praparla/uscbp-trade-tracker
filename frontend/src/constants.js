@@ -35,3 +35,41 @@ export const STATUS_COLORS = {
 export const ITEMS_PER_PAGE = 25
 
 export const DEV_API_URL = 'http://localhost:8000'
+
+// Court rulings — ruling type colors
+export const RULING_TYPE_COLORS = {
+  lawsuit: '#3b82f6',            // blue
+  ruling: '#22c55e',             // green
+  injunction: '#ef4444',         // red
+  appeal: '#f59e0b',             // amber
+  congressional_action: '#8b5cf6', // purple
+  executive_action: '#14b8a6',   // teal
+}
+
+export const RULING_TYPE_LABELS = {
+  lawsuit: 'Lawsuit',
+  ruling: 'Ruling',
+  injunction: 'Injunction',
+  appeal: 'Appeal',
+  congressional_action: 'Congressional',
+  executive_action: 'Executive',
+}
+
+// Court rulings — status colors
+export const RULING_STATUS_COLORS = {
+  pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', dot: 'bg-yellow-500' },
+  decided: { bg: 'bg-green-100', text: 'text-green-800', dot: 'bg-green-500' },
+  appealed: { bg: 'bg-amber-100', text: 'text-amber-800', dot: 'bg-amber-500' },
+  dismissed: { bg: 'bg-gray-100', text: 'text-gray-600', dot: 'bg-gray-400' },
+  enacted: { bg: 'bg-blue-100', text: 'text-blue-800', dot: 'bg-blue-500' },
+  failed: { bg: 'bg-red-100', text: 'text-red-800', dot: 'bg-red-500' },
+}
+
+export const OUTCOME_LABELS = {
+  upheld: 'Upheld',
+  struck_down: 'Struck Down',
+  remanded: 'Remanded',
+  partial: 'Partial',
+  passed: 'Passed',
+  vetoed: 'Vetoed',
+}
